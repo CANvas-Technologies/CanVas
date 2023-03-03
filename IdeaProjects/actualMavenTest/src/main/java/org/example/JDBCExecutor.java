@@ -7,6 +7,7 @@ import java.sql.Statement;
 
 public class JDBCExecutor {
 
+
     public static void main(String... args) {
         DatabaseConnectionManager dcm = new DatabaseConnectionManager("localhost",
                 "candata", "postgres", "password");
@@ -18,6 +19,9 @@ public class JDBCExecutor {
             while(resultSet.next()){
                 System.out.println(resultSet.getInt(1));
             }
+            customerDAO newDAO = new customerDAO(connection);
+            newDAO.createKeyTable(5);
+            newDAO.createSignalTable(9,"testSignal");
         }
         catch(SQLException e) {
             e.printStackTrace();
