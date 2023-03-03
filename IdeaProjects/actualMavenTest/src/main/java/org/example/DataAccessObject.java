@@ -14,8 +14,10 @@ public abstract class DataAccessObject <T extends DataTransferObject>  {
         this.connection = connection;
     }
 
-    public abstract T findById(long id);
+    //public abstract T findById(long id);
     public abstract void createKeyTable(int traceCount);
     public abstract void createSignalTable(int traceCount,String signalName);
+    public abstract Data setDataVal(long timestamp, long data);
+    public abstract void insertSignalData(Data data);
 
 }

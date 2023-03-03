@@ -19,7 +19,7 @@ public class JDBCExecutor {
             while(resultSet.next()){
                 System.out.println(resultSet.getInt(1));
             }
-            customerDAO newDAO = new customerDAO(connection);
+            dataDAO newDAO = new dataDAO(connection);
             newDAO.createKeyTable(5);
             newDAO.createSignalTable(9,"testSignal");
         }
