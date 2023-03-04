@@ -2,5 +2,5 @@ package org.example;
 
 public interface DataTransferObject {
 
-    long getTime();
+    //long getTime();
 }
