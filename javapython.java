@@ -2,7 +2,7 @@ package javapart;
 import java.util.*;
 import java.io.*;
 
-public class testjava {
+public class javapython {
     public static void main(String[] args) {
         //Executes the python command and dumps the output csv files into the directory
         Scanner myObj = new Scanner(System.in);  // Create a Scanner object
