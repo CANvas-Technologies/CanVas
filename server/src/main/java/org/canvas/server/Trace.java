@@ -1,4 +1,4 @@
-package org.example;
+package org.canvas.server;
 
 public class Trace {
     public Trace(int traceId, String traceName) {

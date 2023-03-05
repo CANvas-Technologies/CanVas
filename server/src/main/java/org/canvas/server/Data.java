@@ -1,4 +1,4 @@
-package org.example;
+package org.canvas.server;
 
 public class Data implements DataTransferObject {
     private long timestamp;
