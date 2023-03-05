@@ -1,12 +1,9 @@
 package org.canvas.import_mdf;
 
+import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
-import java.io.File;
-import java.io.InputStreamReader;
-import java.lang.Process;
-import java.lang.ProcessBuilder;
 
 public class MdfImporter {
     public static void main(String[] args) throws Exception {
@@ -17,12 +14,13 @@ public class MdfImporter {
 
     public static List<String> convertMdfToCsvFiles(Path mf4, Path dbc) throws Exception {
         // call python to convert mdf to .csv files
-        Process mdfpy = new ProcessBuilder(
-            "python3",
-            "exportcsv.py",
-            mf4.toAbsolutePath().toString(),
-            dbc.toAbsolutePath().toString()
-        ).start();
+        Process mdfpy =
+                new ProcessBuilder(
+                                "python3",
+                                "exportcsv.py",
+                                mf4.toAbsolutePath().toString(),
+                                dbc.toAbsolutePath().toString())
+                        .start();
 
         // has the process exited successfully?
         // todo: add timeout
@@ -41,12 +39,13 @@ public class MdfImporter {
         // get csv file names in directory
         File[] files = dir.listFiles();
         if (files == null) {
-            throw new Exception("Couldn't list in directory mdfpy should have made ('" + dir_name + "')");
+            throw new Exception(
+                    "Couldn't list in directory mdfpy should have made ('" + dir_name + "')");
         }
 
         // get absolute path of each file
         List<String> paths = new ArrayList<String>();
-        for (File f: files) {
+        for (File f : files) {
             paths.add(f.getAbsolutePath());
         }
 
