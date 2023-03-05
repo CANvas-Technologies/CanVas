@@ -1,15 +1,13 @@
 package org.example;
-import java.util.ArrayList;
-import java.util.List;
+
 public class Trace {
-    public Trace(int traceId, String traceName){
+    public Trace(int traceId, String traceName) {
         id = traceId;
         name = traceName;
     }
 
     private int id;
     private String name;
-
 
     public int getId() {
         return id;
@@ -26,8 +24,4 @@ public class Trace {
     public void setName(String name) {
         this.name = name;
     }
-
-
-
 }
-

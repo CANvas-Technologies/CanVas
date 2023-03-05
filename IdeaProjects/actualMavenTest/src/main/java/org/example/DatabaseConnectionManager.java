@@ -1,4 +1,5 @@
 package org.example;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -8,7 +9,8 @@ public class DatabaseConnectionManager {
     private final String url;
     private final Properties properties;
 
-    public DatabaseConnectionManager(String host, String databaseName, String username, String password) {
+    public DatabaseConnectionManager(
+            String host, String databaseName, String username, String password) {
 
         this.url = "jdbc:postgresql://" + host + "/" + databaseName;
         this.properties = new Properties();

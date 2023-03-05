@@ -1,18 +1,14 @@
 package org.example;
 
-
 import java.util.ArrayList;
 import java.util.List;
 
 public class Key implements DataTransferObject {
 
-    public Key(String name, ArrayList<Integer> inList){
+    public Key(String name, ArrayList<Integer> inList) {
         signalName = name;
         bucketCutoffs = inList;
-
     }
-
-
 
     private String signalName;
 
@@ -21,7 +17,8 @@ public class Key implements DataTransferObject {
     public void addBucketCutoff(int cutoff) {
         this.bucketCutoffs.add(cutoff);
     }
-    public List<Integer> getBucketCutoff(){
+
+    public List<Integer> getBucketCutoff() {
         return bucketCutoffs;
     }
 
@@ -32,12 +29,4 @@ public class Key implements DataTransferObject {
     public void setSignalName(String signalName) {
         this.signalName = signalName;
     }
-
-
-
-
-
-
-
-
 }
