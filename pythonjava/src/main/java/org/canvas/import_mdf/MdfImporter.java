@@ -1,3 +1,5 @@
+package org.canvas.import_mdf;
+
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
@@ -6,7 +8,7 @@ import java.io.InputStreamReader;
 import java.lang.Process;
 import java.lang.ProcessBuilder;
 
-public class import_mdf {
+public class MdfImporter {
     public static void main(String[] args) throws Exception {
         Path mdf = Paths.get("./examples/audi/output1.mf4");
         Path dbc = Paths.get("./examples/audi/audi.dbc");
