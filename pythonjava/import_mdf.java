@@ -23,6 +23,7 @@ public class import_mdf {
         ).start();
 
         // has the process exited successfully?
+        // todo: add timeout
         if (mdfpy.waitFor() != 0) {
             // Dump stderr to a string and throw an exception.
             String err = new String(mdfpy.getErrorStream().readAllBytes());
