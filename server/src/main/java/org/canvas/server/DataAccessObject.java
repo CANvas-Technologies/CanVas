@@ -1,4 +1,4 @@
-package org.example;
+package org.canvas.server;
 
 import java.sql.*;
 
