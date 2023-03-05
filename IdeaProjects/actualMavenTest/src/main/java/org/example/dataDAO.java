@@ -4,6 +4,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 
 public class dataDAO extends DataAccessObject{
 
@@ -75,7 +76,7 @@ public class dataDAO extends DataAccessObject{
 
     }
     public void insertKeyData(int traceCount, Key smallKey ){
-        String name  = smallKey.getSignalName() +  traceCount;
+        String name  = smallKey.getSignalName().toLowerCase() +  traceCount;
         StringBuilder temp  = new StringBuilder();
         temp.append("INSERT INTO ").append("keys"+traceCount).append(" VALUES (").append("\'").append(name).append("\'");
 
@@ -125,4 +126,68 @@ public class dataDAO extends DataAccessObject{
             throw new RuntimeException(e);
         }
     }
+    public ArrayList<Integer> getBucketVals(int traceNum, String name, int bucket){
+        ArrayList<Integer> bucketVals= new ArrayList<Integer>();
+        StringBuilder bottomTemp = new StringBuilder();
+        bottomTemp.append("SELECT ").append("b").append(bucket-1).append(" FROM ").append("keys").append(traceNum).append(" WHERE signal_name=").append("\'").append(name).append("\'");
+        String bottomCommand = bottomTemp.toString();
+        if(bucket<=0){
+            bucketVals.add(0);
+        }
+        else{
+            try(PreparedStatement statement = this.connection.prepareStatement(bottomCommand)){
+
+                ResultSet resultSet = statement.executeQuery();
+                while(resultSet.next()){
+                    bucketVals.add(resultSet.getInt(1));
+                }
+
+
+            }
+            catch (SQLException e) {
+                e.printStackTrace();
+                throw new RuntimeException(e);
+            }
+        }
+        StringBuilder topTemp = new StringBuilder();
+        topTemp.append("SELECT ").append("b").append(bucket).append(" FROM ").append("keys").append(traceNum).append(" WHERE signal_name=").append("\'").append(name).append("\'");
+        String topCommand = topTemp.toString();
+        try(PreparedStatement statement = this.connection.prepareStatement(topCommand)){
+
+            ResultSet resultSet = statement.executeQuery();
+            while(resultSet.next()){
+               bucketVals.add(resultSet.getInt(1));
+            }
+
+
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+        return bucketVals;
+    }
+
+    public void retrieveData(int traceNum, String signalName, int bucket){
+        String name = signalName + traceNum;
+        StringBuilder temp = new StringBuilder();
+        List<Integer> bucketBounds = getBucketVals(traceNum,name,bucket);
+
+        temp.append("SELECT * FROM ").append(name).append(" WHERE timestamp >").append(bucketBounds.get(0)).append(" AND timestamp<=").append(bucketBounds.get(1));
+        String retrieveCommand = temp.toString();
+        try(PreparedStatement statement = this.connection.prepareStatement(retrieveCommand)){
+
+            ResultSet resultSet = statement.executeQuery();
+            while(resultSet.next()){
+                System.out.println(resultSet.getInt(1));
+            }
+
+
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+    }
+
 }

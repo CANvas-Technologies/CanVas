@@ -49,6 +49,10 @@ public class JDBCExecutor {
             Data newData = new Data();
             newData = newDAO.setDataVal(1,1);
             newDAO.insertSignalData(traceNum,"testSignal",newData);
+            //List<Integer> temp = newDAO.getBucketVals(17,"testsignal17",1);
+            newDAO.retrieveData(17,"testsignal",1);
+
+
         }
         catch(SQLException e) {
             e.printStackTrace();

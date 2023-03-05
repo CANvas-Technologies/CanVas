@@ -26,6 +26,10 @@ public abstract class DataAccessObject <E extends DataTransferObject>  {
 
     public abstract void insertTraceData(Trace trace);
 
+    public abstract void retrieveData(int traceNum, String signalName,int bucket );
+
+    public abstract ArrayList<Integer> getBucketVals(int traceNum, String name, int bucket );
+
 
 
 }
