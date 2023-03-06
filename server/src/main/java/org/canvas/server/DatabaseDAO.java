@@ -147,15 +147,15 @@ public class DatabaseDAO {
     public SignalHandle newSignal(TraceHandle trace, SignalData sigData) {
         SignalHandle sig = new SignalHandle(trace, sigData.getName());
         this.insertKeyData(trace, sig, sigData);
-        this.insertSignalData(sig, sigData);
         this.createSignalTable(sig);
+        this.insertSignalData(sig, sigData);
 
         return sig;
     }
 
     // For now, trace names must be unique.
     public String getTraceUUID(String traceName) {
-        String output = "";
+        String output = null;
         final String getUUID = "SELECT trace_uuid FROM traces WHERE trace_name =?";
         try (PreparedStatement statement = this.connection.prepareStatement(getUUID); ) {
             statement.setString(1, traceName);
@@ -174,7 +174,11 @@ public class DatabaseDAO {
     public String getSignalUUID(String traceUUID, String signalName) {
         String name = "trace_" + traceUUID + "_keys";
         String output = "";
-        final String GET_TABLE_NAME = "SELECT signal_uuid FROM " + wrapQuotes(name) + " WHERE signal_name = " + wrapSingleQuotes(signalName);
+        final String GET_TABLE_NAME =
+                "SELECT signal_uuid FROM "
+                        + wrapQuotes(name)
+                        + " WHERE signal_name = "
+                        + wrapSingleQuotes(signalName);
         try (PreparedStatement statement = this.connection.prepareStatement(GET_TABLE_NAME); ) {
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {
@@ -197,7 +201,7 @@ public class DatabaseDAO {
                     .append("SELECT b")
                     .append(bucketVal - 1)
                     .append(" FROM ")
-                    .append(wrapQuotes("trace_ " + traceUUID + "_keys"))
+                    .append(wrapQuotes("trace_" + traceUUID + "_keys"))
                     .append(" WHERE signal_uuid = ")
                     .append(wrapSingleQuotes(signalUUID));
             final String BOTTOM_COMMAND = bottomTemp.toString();
@@ -216,7 +220,7 @@ public class DatabaseDAO {
         topTemp.append("SELECT b")
                 .append(bucketVal)
                 .append(" FROM ")
-                .append(wrapQuotes("trace_ " + traceUUID + "_keys"))
+                .append(wrapQuotes("trace_" + traceUUID + "_keys"))
                 .append("_keys")
                 .append(" WHERE signal_uuid = ")
                 .append(wrapSingleQuotes(signalUUID));
@@ -234,18 +238,17 @@ public class DatabaseDAO {
         return bucketVals;
     }
 
-    public String getDataInBucket(String traceName, String stringName, int bucketVal) {
+    public String getDataInBucket(String traceUUID, String signalUUID, int bucketVal) {
         String output = "";
-        String traceUUID = getTraceUUID(traceName);
-        String signalUUID = getSignalUUID(traceUUID, stringName);
         StringBuilder temp = new StringBuilder();
         List<Integer> bucketBounds = getBucketCutoffs(traceUUID, signalUUID, bucketVal);
         temp.append("SELECT * FROM ")
-                .append(wrapQuotes("signal_ " + signalUUID + "_data"))
-                .append(" WHERE timestamp > ")
-                .append(bucketBounds.get(0))
-                .append(" AND timestamp <= ")
-                .append(bucketBounds.get(1));
+                .append(wrapQuotes("signal_" + signalUUID + "_data"))
+                .append(" OFFSET ")
+                .append(bucketBounds.get(0) + " ROWS")
+                .append(" FETCH NEXT ")
+                .append(bucketBounds.get(1) - bucketBounds.get(0))
+                .append("ROWS ONLY");
         final String RETRIEVE_COMMAND = temp.toString();
         try (PreparedStatement statement = this.connection.prepareStatement(RETRIEVE_COMMAND)) {
 
@@ -279,18 +282,17 @@ public class DatabaseDAO {
         }
     }
 
-    public String deleteTrace(String traceName) {
-        String traceUUID = getTraceUUID(traceName);
+    public String deleteTrace(String traceUUID) {
         ArrayList<String> tableNames = new ArrayList<String>();
-        StringBuilder temp = new StringBuilder();
-        temp.append("SELECT signal_uuid FROM ").append(traceUUID).append("_keys");
-        final String GET_NAMES = temp.toString();
-        try (PreparedStatement statement = this.connection.prepareStatement(GET_NAMES); ) {
+        // StringBuilder temp = new StringBuilder();
+        // temp.append("SELECT signal_uuid FROM \"table_").append(traceUUID).append("_keys");
+        final String getUUIDs =
+                "SELECT signal_uuid FROM " + wrapQuotes("trace_" + traceUUID + "_keys");
+        try (PreparedStatement statement = this.connection.prepareStatement(getUUIDs); ) {
 
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {
-                // System.out.println(resultSet.getInt(1));
-                tableNames.add(resultSet.getString("signal_data_table"));
+                tableNames.add(resultSet.getString("signal_uuid"));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -298,9 +300,9 @@ public class DatabaseDAO {
         }
 
         for (int i = 0; i < tableNames.size(); i++) {
-            dropThatTable(tableNames.get(i));
+            dropThatTable("signal_" + tableNames.get(i) + "_data");
         }
-        dropThatTable(traceUUID + "_keys");
+        dropThatTable("trace_" + traceUUID + "_keys");
         final String REMOVE_TRACE_COMMAND =
                 "DELETE FROM traces WHERE trace_uuid = " + wrapSingleQuotes(traceUUID);
         try (PreparedStatement statement =
