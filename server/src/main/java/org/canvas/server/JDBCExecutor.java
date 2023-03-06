@@ -1,14 +1,19 @@
 package org.canvas.server;
 
+import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.*;
 import java.util.ArrayList;
 
 public class JDBCExecutor {
 
-    public static void main(String... args) {
+    public static void main(String... args) throws Throwable {
+        Path mdf = Paths.get("../pythonjava/examples/audi/output1.mf4");
+        Path dbc = Paths.get("../pythonjava/examples/audi/audi.dbc");
+        File[] files = MdfImporter.convertMdfToCsvFiles(mdf, dbc);
+
         DatabaseConnectionManager dcm =
                 new DatabaseConnectionManager("localhost", "candata", "postgres", "password");
 
@@ -22,49 +27,35 @@ public class JDBCExecutor {
             // CREATE TABLE traces (trace_number INT DEFAULT NULL PRIMARY KEY, trace_name
             // varchar(50) DEFAULT NULL);
 
-            // RUNNING INSTRUCTIONS:
-            // Basically, what you do is for each trace make a trace object and insert that to the
-            // "traces" table.
-            // Then get the traceNum, which will be used to generate the rest of the tables. Then
-            // for each signal, make
-            // a corresponding signal table, and fill it using the Data class (should make that a
-            // constructor I know but
-            // it is 3 and I am tired. I assume as you do that you are filling your arraylist or
-            // whatever for the bucket
-            // cutoffs. Once the first is done, use the createKeyTable passing in the traceNum and
-            // the size of one signal's
-            // worth of cutoffs to generate the table, and then create a Key object and pass that
-            // into the table.
-            // ONLY MAKE THE TABLE ON THE FIRST KEY OBJECT SEEN. Then that is basically it.
-            // rinse and repeat the process of making the signal table, passing in data objects and
-            // inserting into the
-            // key table as you go.
-
             // get future trace number
-            int traceNum = newDAO.getTraceNum();
-
-            // Start building new trace
-            Trace trace = new Trace(traceNum, "testTrace");
+            final int traceNum = newDAO.getTraceNum();
+            Trace trace = new Trace(traceNum, "actual_real_trace");
             newDAO.insertTraceData(trace);
 
-                // Get bucket cutoffs for this signal
+            // do once
+            newDAO.createKeyTable(traceNum, 2);  // temp hardcoded size
+
+            for (File f : files) {
+                SignalData sig = MdfImporter.readCsvFileToSignalData(f);
+
+                if (sig == null) {  // this file was skipped
+                    continue;
+                }
+
                 ArrayList<Integer> bucketCutoffs = new ArrayList<Integer>();
                 bucketCutoffs.add(1);
                 bucketCutoffs.add(2);
 
-                // do once
-                newDAO.createKeyTable(traceNum, bucketCutoffs.size());
+                Key key = new Key(sig.getName(), bucketCutoffs);
+                newDAO.insertKeyData(traceNum, key);
 
-                // Make key entry for this signal
-                Key newKey = new Key("testSignal", bucketCutoffs);
-                newDAO.insertKeyData(traceNum, newKey);
-
-                // Populate signal data
-                newDAO.createSignalTable(traceNum, "testSignal");
-                Data newData = new Data(1, 1);
-                newDAO.insertSignalData(traceNum, "testSignal", newData);
-
-        } catch (SQLException e) {
+                newDAO.createSignalTable(traceNum, sig.getName());
+                List<Data> data = sig.getData();
+                for (Data d : data) {
+                    newDAO.insertSignalData(traceNum, sig.getName(), d);
+                }
+            }
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
