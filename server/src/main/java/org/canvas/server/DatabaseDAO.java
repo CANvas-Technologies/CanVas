@@ -233,6 +233,23 @@ public class DatabaseDAO {
         }
         return bucketVals;
     }
+    public ArrayList<String> getSignalNames(String traceUUID){
+        ArrayList<String> stringNames = new ArrayList<String>();
+        StringBuilder temp = new StringBuilder();
+        temp.append("SELECT signal_name FROM ").append(wrapQuotes(traceUUID + "_keys"));
+        final String GET_SIGNAL_NAMES = temp.toString();
+        try (PreparedStatement statement = this.connection.prepareStatement(GET_SIGNAL_NAMES); ) {
+
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                stringNames.add(resultSet.getString("signal_name"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+        return stringNames;
+    }
 
     public String getDataInBucket(String traceName, String stringName, int bucketVal) {
         String output = "";
