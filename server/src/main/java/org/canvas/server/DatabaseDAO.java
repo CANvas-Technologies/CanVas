@@ -174,10 +174,8 @@ public class DatabaseDAO {
     public String getSignalUUID(String traceUUID, String signalName) {
         String name = "trace_" + traceUUID + "_keys";
         String output = "";
-        final String GET_TABLE_NAME = "SELECT signal_data_table FROM ? WHERE signal_name = ?";
+        final String GET_TABLE_NAME = "SELECT signal_uuid FROM " + wrapQuotes(name) + " WHERE signal_name = " + wrapSingleQuotes(signalName);
         try (PreparedStatement statement = this.connection.prepareStatement(GET_TABLE_NAME); ) {
-            statement.setString(1, name);
-            statement.setString(2, signalName);
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 output = resultSet.getString(1);
@@ -285,7 +283,7 @@ public class DatabaseDAO {
         String traceUUID = getTraceUUID(traceName);
         ArrayList<String> tableNames = new ArrayList<String>();
         StringBuilder temp = new StringBuilder();
-        temp.append("SELECT signal_data_table FROM ").append(traceUUID).append("_keys");
+        temp.append("SELECT signal_uuid FROM ").append(traceUUID).append("_keys");
         final String GET_NAMES = temp.toString();
         try (PreparedStatement statement = this.connection.prepareStatement(GET_NAMES); ) {
 

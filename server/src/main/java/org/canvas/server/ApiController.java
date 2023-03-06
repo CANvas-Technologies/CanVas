@@ -32,4 +32,24 @@ public class ApiController {
 
         return uuid;
     }
+
+    @GetMapping(value = "/api/get_signal_uuid/{trace_uuid}/{signal_name}", produces = "text/plain")
+    @ResponseBody
+    public String getTraceUUID(@PathVariable("trace_uuid") String traceUUID, @PathVariable("signal_name") String signalName) {
+        DatabaseConnectionManager dcm = new DatabaseConnectionManager("localhost", "candata", "postgres", "password");
+
+        String uuid = "";
+        try {
+            Connection connection = dcm.getConnection();
+            DatabaseDAO db = new DatabaseDAO(connection);
+
+            uuid = db.getSignalUUID(traceUUID, signalName);
+            System.out.println("GOT SIGNAL UUID: " + uuid);
+        } catch (Throwable e) {
+            e.printStackTrace();
+            return "";
+        }
+
+        return uuid;
+    }
 }
