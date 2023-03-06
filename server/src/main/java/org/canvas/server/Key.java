@@ -3,7 +3,7 @@ package org.canvas.server;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Key implements DataTransferObject {
+public class Key {
 
     public Key(String name, List<Integer> inList) {
         signalName = name.replace('.', '$');
