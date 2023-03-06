@@ -3,16 +3,13 @@ package org.canvas.server;
 import java.io.File;
 import java.io.FileReader;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 
 import com.opencsv.CSVReader;
-import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.Pair;
 
 public class MdfImporter {
     // read in signal data, not bucketized
-    public static List<Pair<Double, Double>> readCsvFileToSignalData(File file) throws Exception {
+    public static List<Data> readCsvFileToSignalData(File file) throws Exception {
         try {
             // make CSV reader
             CSVReader csv = new CSVReader(new FileReader(file));
@@ -49,13 +46,14 @@ public class MdfImporter {
             System.out.println("Processing " + signalName);
 
             // todo: for now, all signal values are doubles, but there can actually be different kinds
-            List<Pair<Double, Double>> vals = new ArrayList<Pair<Double, Double>>();
+            // List<Pair<Double, Double>> vals = new ArrayList<Pair<Double, Double>>();
+            List<Data> vals = new ArrayList<Data>();
 
             String[] line;
             while ((line = csv.readNext()) != null) {
                 double timestamp = Double.parseDouble(line[0]);
                 double value = Double.parseDouble(line[1]);
-                vals.add(new ImmutablePair<>(timestamp, value));
+                vals.add(new Data(timestamp, value));
             }
 
             csv.close();

@@ -52,8 +52,7 @@ public class JDBCExecutor {
 
             newDAO.createSignalTable(traceNum, "testSignal");
             newDAO.insertKeyData(traceNum, newKey);
-            Data newData = new Data();
-            newData = newDAO.setDataVal(1, 1);
+            Data newData = new Data(1, 1);
             newDAO.insertSignalData(traceNum, "testSignal", newData);
         } catch (SQLException e) {
             e.printStackTrace();
