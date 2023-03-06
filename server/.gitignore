@@ -1,1 +1,4 @@
 target/
+
+# csv output dirs
+out_*
