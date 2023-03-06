@@ -16,7 +16,7 @@ public abstract class DataAccessObject<E extends DataTransferObject> {
 
     public abstract void createSignalTable(int traceCount, String signalName);
 
-    public abstract void insertSignalData(int traceCount, String signalName, Data data);
+    public abstract void insertSignalData(int traceCount, SignalData sig);
 
     public abstract void insertKeyData(int traceCount, Key smallKey);
 

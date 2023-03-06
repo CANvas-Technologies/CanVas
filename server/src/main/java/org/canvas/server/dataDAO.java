@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 public class dataDAO extends DataAccessObject {
 
@@ -61,15 +62,25 @@ public class dataDAO extends DataAccessObject {
         return newData;
     }
 
-    public void insertSignalData(int traceCount, String signalName, Data data) {
-        String name = signalName.replace('.', '$') + traceCount;
+    public void insertSignalData(int traceCount, SignalData sig) {
+        String name = sig.getName().replace('.', '$') + traceCount;
         final String INSERT_DATA =
                 ((new StringBuilder()).append("INSERT INTO ").append(name).append(" VALUES(?,?)"))
                         .toString();
+
+        List<Data> data = sig.getData();
         try (PreparedStatement statement = this.connection.prepareStatement(INSERT_DATA); ) {
-            statement.setDouble(1, data.getTimestamp());
-            statement.setDouble(2, data.getData());
-            statement.executeUpdate();
+            int i = 0;
+            for (Data d : data) {
+                statement.setDouble(1, d.getTimestamp());
+                statement.setDouble(2, d.getData());
+                statement.addBatch();
+                i++;
+
+                if (i % 1000 == 0 || i == data.size()) {
+                    statement.executeBatch();
+                }
+            }
         } catch (SQLException e) {
             e.printStackTrace();
             throw new RuntimeException(e);

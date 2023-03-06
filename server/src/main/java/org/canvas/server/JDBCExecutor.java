@@ -50,10 +50,7 @@ public class JDBCExecutor {
                 newDAO.insertKeyData(traceNum, key);
 
                 newDAO.createSignalTable(traceNum, sig.getName());
-                List<Data> data = sig.getData();
-                for (Data d : data) {
-                    newDAO.insertSignalData(traceNum, sig.getName(), d);
-                }
+                newDAO.insertSignalData(traceNum, sig);
             }
         } catch (Exception e) {
             e.printStackTrace();
