@@ -4,7 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
-
+import java.sql.ResultSet;
 public class DatabaseDAO {
     Connection connection;
 
@@ -145,9 +145,108 @@ public class DatabaseDAO {
     public SignalHandle newSignal(TraceHandle trace, SignalData sigData) {
         SignalHandle sig = new SignalHandle(trace, sigData.getName());
         this.insertKeyData(trace, sig, sigData);
-        this.createSignalTable(sig);
         this.insertSignalData(sig, sigData);
+        this.createSignalTable(sig);
 
         return sig;
+    }
+
+
+    public String getTraceUUID(String traceName){
+        String output = "";
+        final String getUUID = "SELECT trace_uuid FROM traces WHERE trace_name =?";
+        try (PreparedStatement statement = this.connection.prepareStatement(getUUID); ){
+            statement.setString(1,traceName);
+            ResultSet resultSet = statement.executeQuery();
+            while(resultSet.next()){
+                output = resultSet.getString(1);
+            }
+        }catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+
+        return output;
+    }
+    public String getSignalUUID(String traceUUID,String signalName){
+        String name = traceUUID + "_keys";
+        String output = "";
+        final String GET_TABLE_NAME = "SELECT signal_data_table FROM ? WHERE signal_name = ?";
+        try (PreparedStatement statement = this.connection.prepareStatement(GET_TABLE_NAME); ){
+            statement.setString(1,name);
+            statement.setString(2,signalName);
+            ResultSet resultSet = statement.executeQuery();
+            while(resultSet.next()){
+                output = resultSet.getString(1);
+            }
+        }catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+        return output;
+    }
+
+    public String getBucketCutoffs(String traceUUID, String signalUUID, int bucketVal){
+        ArrayList<Integer> bucketVals= new ArrayList<Integer>();
+        StringBuilder bottomTemp = new StringBuilder();
+        if(bucketVal<=0){
+            bucketVals.add(0);
+        }
+        else{
+            bottomTemp.append("SELECT b").append(bucketVal-1).append(" FROM ").append(traceUUID).append("_keys")
+                    .append(" WHERE signal_data_table = ").append(signalUUID);
+            final String BOTTOM_COMMAND = bottomTemp.toString();
+            try (PreparedStatement statement = this.connection.prepareStatement(BOTTOM_COMMAND); ){
+
+                ResultSet resultSet = statement.executeQuery();
+                while(resultSet.next()){
+                    bucketVals.add( resultSet.getInt(1));
+                }
+            }catch (SQLException e) {
+                e.printStackTrace();
+                throw new RuntimeException(e);
+            }
+        }
+        StringBuilder topTemp = new StringBuilder();
+        topTemp.append("SELECT b").append(bucketVal).append(" FROM ").append(traceUUID).append("_keys")
+                .append(" WHERE signal_data_table = ").append(signalUUID);
+        final String TOP_COMMAND = topTemp.toString();
+        try (PreparedStatement statement = this.connection.prepareStatement(TOP_COMMAND); ){
+
+            ResultSet resultSet = statement.executeQuery();
+            while(resultSet.next()){
+                bucketVals.add( resultSet.getInt(1));
+            }
+        }catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+        return bucketVals;
+
+    }
+    public String getDataInBucket(String traceName, String stringName, int bucketVal){
+        String output = "";
+        String traceUUID = getTraceUUID(traceName);
+        String signalUUID = getSignalUUID(traceUUID,stringName);
+        StringBuilder temp = new StringBuilder();
+        List<Integer> bucketBounds = getBucketCutoffs(traceUUID,signalUUID,bucketVal);
+        temp.append("SELECT * FROM ").append(signalUUID).append(" WHERE timestamp > ").append(bucketBounds.get(0))
+                .append(" AND timestamp <= ").append(bucketBounds.get(1));
+        final String RETRIEVE_COMMAND = temp.toString();
+        try(PreparedStatement statement = this.connection.prepareStatement(RETRIEVE_COMMAND)){
+
+            ResultSet resultSet = statement.executeQuery();
+            while(resultSet.next()){
+                //System.out.println(resultSet.getInt(1));
+                output = output + "timestamp:" + resultSet.getFloat("timestamp") + " data point: " + resultSet.getFloat("data") + "\n";
+            }
+
+
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+        return output;
     }
 }
