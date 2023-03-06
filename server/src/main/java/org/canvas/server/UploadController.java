@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.UUID;
 
 @Controller
 public class UploadController {
@@ -34,11 +35,28 @@ public class UploadController {
         try {
             // Get the file and save it somewhere
             byte[] bytes = file.getBytes();
-            Path path = Paths.get(UPLOADED_FOLDER + file.getOriginalFilename());
+
+            // We use a UUID for the filename, which avoids collisions and mitigates malicious input
+            String throwAwayUUID = UUID.randomUUID().toString();
+            Path path = Paths.get(UPLOADED_FOLDER + "/" + throwAwayUUID);
             Files.write(path, bytes);
 
+            // Process the file as a trace
+            TraceHandle trace = null;
+
+            try {
+                trace = UploadHandler.HandleUpload(path);
+            } catch (Throwable e) {
+                e.printStackTrace();
+                // return error
+            };
+
+            if (trace == null) {
+                // return error
+            }
+
             redirectAttributes.addFlashAttribute("message",
-                    "You successfully uploaded '" + file.getOriginalFilename() + "'");
+                    "You successfully uploaded '" + file.getOriginalFilename() + "' (UUID " + trace.getUUIDString() + ").");
 
         }
 

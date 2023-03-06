@@ -2,15 +2,15 @@ package org.canvas.server;
 
 import java.io.File;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.sql.Connection;
 
-public class JDBCExecutor {
+public class UploadHandler {
 
-    public static void main(String... args) throws Throwable {
-        Path mdf = Paths.get("../pythonjava/examples/audi/output1.mf4");
-        Path dbc = Paths.get("../pythonjava/examples/audi/audi.dbc");
-        File[] files = MdfImporter.convertMdfToCsvFiles(mdf, dbc);
+    public static TraceHandle HandleUpload(Path input) throws Throwable {
+        TraceHandle trace = null;
+
+        // pass input for both mf4 and dbc; asammdf handles it okay.
+        File[] files = MdfImporter.convertMdfToCsvFiles(input, input);
 
         DatabaseConnectionManager dcm =
                 new DatabaseConnectionManager("localhost", "candata", "postgres", "password");
@@ -30,7 +30,7 @@ public class JDBCExecutor {
             // CREATE TABLE traces (trace_uuid char(36) PRIMARY KEY, trace_name varchar(1000),
             // trace_key_table char(47));
 
-            TraceHandle trace = newDAO.newTrace("actual_real_trace");
+            trace = newDAO.newTrace("actual_real_trace");
 
             for (File f : files) {
                 SignalData sigData = MdfImporter.readCsvFileToSignalData(f);
@@ -45,5 +45,8 @@ public class JDBCExecutor {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        return trace;
     }
+
 }
