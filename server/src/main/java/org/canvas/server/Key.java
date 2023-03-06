@@ -5,7 +5,7 @@ import java.util.List;
 
 public class Key implements DataTransferObject {
 
-    public Key(String name, ArrayList<Integer> inList) {
+    public Key(String name, List<Integer> inList) {
         signalName = name.replace('.', '$');
         bucketCutoffs = inList;
     }
