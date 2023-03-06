@@ -21,7 +21,7 @@ public class DatabaseDAO {
 
         // Set up the primary traces table if it doesn't exist.
         final String createPrimaryTable =
-            "CREATE TABLE IF NOT EXISTS traces (trace_uuid char(36) PRIMARY KEY, trace_name varchar(1000), trace_key_table char(47))";
+                "CREATE TABLE IF NOT EXISTS traces (trace_uuid char(36) PRIMARY KEY, trace_name varchar(1000), trace_key_table char(47))";
         try (PreparedStatement statement = this.connection.prepareStatement(createPrimaryTable); ) {
             statement.executeUpdate();
         } catch (SQLException e) {
@@ -37,8 +37,9 @@ public class DatabaseDAO {
                 new StringBuilder()
                         .append("CREATE TABLE IF NOT EXISTS ")
                         .append(DatabaseDAO.wrapQuotes(trace.getKeyTableName()))
-                        .append(" (signal_name varchar(1000) PRIMARY KEY," +
-                                " signal_uuid char(36)");
+                        .append(
+                                " (signal_name varchar(1000) PRIMARY KEY,"
+                                        + " signal_uuid char(36)");
         for (int i = 0; i < size; i++) {
             temp.append(", B" + i + " INT DEFAULT NULL");
         }
@@ -58,9 +59,7 @@ public class DatabaseDAO {
                 ((new StringBuilder())
                                 .append("CREATE TABLE IF NOT EXISTS ")
                                 .append(DatabaseDAO.wrapQuotes(sig.getDataTableName()))
-                                .append(
-                                        " (timestamp FLOAT(20) PRIMARY KEY,data"
-                                                + " FLOAT(20))"))
+                                .append(" (timestamp FLOAT(20) PRIMARY KEY,data" + " FLOAT(20))"))
                         .toString();
         try (PreparedStatement statement =
                 this.connection.prepareStatement(CREATE_SIGNAL_TABLE); ) {
@@ -74,9 +73,10 @@ public class DatabaseDAO {
 
     void insertSignalData(SignalHandle sig, SignalData sigData) {
         final String INSERT_DATA =
-                ((new StringBuilder()).append("INSERT INTO ")
-                        .append(DatabaseDAO.wrapQuotes(sig.getDataTableName()))
-                        .append(" VALUES(?,?)"))
+                ((new StringBuilder())
+                                .append("INSERT INTO ")
+                                .append(DatabaseDAO.wrapQuotes(sig.getDataTableName()))
+                                .append(" VALUES(?,?)"))
                         .toString();
 
         List<SignalDatapoint> data = sigData.getData();

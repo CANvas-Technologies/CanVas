@@ -71,7 +71,6 @@
                         <googleJavaFormat>
                             <version>1.15.0</version>
                             <style>AOSP</style>
-                            <reflowLongStrings>true</reflowLongStrings>
                         </googleJavaFormat>
                     </java>
                 </configuration>
