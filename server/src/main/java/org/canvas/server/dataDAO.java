@@ -7,10 +7,6 @@ import java.sql.SQLException;
 import java.util.List;
 
 public class dataDAO extends DataAccessObject {
-
-    private static final String ADD_TRACE = "INSERT INTO traces" + " VALUES(?,?)";
-    // private static final String CREATE_KEY_TABLE = "CREATE TABLE" + ? + "(B0 INT DEFAULT NULL)";
-
     public dataDAO(Connection connection) {
         super(connection);
     }

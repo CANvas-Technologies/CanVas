@@ -4,8 +4,6 @@ import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.Connection;
-import java.util.*;
-import java.util.ArrayList;
 
 public class JDBCExecutor {
 
@@ -31,12 +29,15 @@ public class JDBCExecutor {
             final int traceNum = newDAO.getTraceNum();
             Trace trace = new Trace(traceNum, "actual_real_trace");
             newDAO.insertTraceData(trace);
-            newDAO.createKeyTable(traceNum, 60 * 20); // Hardcoded max size of 20 minutes, psql tables can have max 1600 cols
+            newDAO.createKeyTable(
+                    traceNum,
+                    60 * 20); // Hardcoded max size of 20 minutes, psql tables can have max
+            // 1600 cols
 
             for (File f : files) {
                 SignalData sig = MdfImporter.readCsvFileToSignalData(f);
 
-                if (sig == null) {  // this file was skipped
+                if (sig == null) { // this file was skipped
                     continue;
                 }
 
