@@ -13,7 +13,7 @@ public class UploadHandler {
         File[] files = MdfImporter.convertMdfToCsvFiles(input, input);
 
         DatabaseConnectionManager dcm =
-                new DatabaseConnectionManager("localhost", "candata", "postgres", "password");
+                new DatabaseConnectionManager("db", "candata", "postgres", "password");
 
         try {
             Connection connection = dcm.getConnection();
