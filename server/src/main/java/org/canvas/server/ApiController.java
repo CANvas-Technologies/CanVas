@@ -17,7 +17,7 @@ public class ApiController {
     @ResponseBody
     public String getTraceUUID(@PathVariable("name") String name) {
         DatabaseConnectionManager dcm =
-                new DatabaseConnectionManager("localhost", "candata", "postgres", "password");
+                new DatabaseConnectionManager("db", "candata", "postgres", "password");
 
         String uuid = "";
         try {
@@ -40,7 +40,7 @@ public class ApiController {
             @PathVariable("trace_uuid") String traceUUID,
             @PathVariable("signal_name") String signalName) {
         DatabaseConnectionManager dcm =
-                new DatabaseConnectionManager("localhost", "candata", "postgres", "password");
+                new DatabaseConnectionManager("db", "candata", "postgres", "password");
 
         String uuid = "";
         try {
@@ -66,7 +66,7 @@ public class ApiController {
             @PathVariable("signal_uuid") String signalUUID,
             @PathVariable("bucket") int bucket) {
         DatabaseConnectionManager dcm =
-                new DatabaseConnectionManager("localhost", "candata", "postgres", "password");
+                new DatabaseConnectionManager("db", "candata", "postgres", "password");
 
         String dataInBucket = "";
         try {
@@ -86,7 +86,7 @@ public class ApiController {
     @ResponseBody
     public String deleteTrace(@PathVariable("trace_uuid") String traceUUID) {
         DatabaseConnectionManager dcm =
-                new DatabaseConnectionManager("localhost", "candata", "postgres", "password");
+                new DatabaseConnectionManager("db", "candata", "postgres", "password");
 
         try {
             Connection connection = dcm.getConnection();

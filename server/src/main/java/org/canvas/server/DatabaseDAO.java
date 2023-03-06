@@ -248,7 +248,7 @@ public class DatabaseDAO {
                 .append(bucketBounds.get(0) + " ROWS")
                 .append(" FETCH NEXT ")
                 .append(bucketBounds.get(1) - bucketBounds.get(0))
-                .append("ROWS ONLY");
+                .append(" ROWS ONLY");
         final String RETRIEVE_COMMAND = temp.toString();
         try (PreparedStatement statement = this.connection.prepareStatement(RETRIEVE_COMMAND)) {
 
