@@ -41,8 +41,7 @@ public class JDBCExecutor {
                     continue;
                 }
 
-                SignalKeyEntry key = new SignalKeyEntry(sig.getName(), sig.getBucketCutoffs());
-                newDAO.insertKeyData(traceNum, key);
+                newDAO.insertKeyData(traceNum, sig);
 
                 newDAO.createSignalTable(traceNum, sig.getName());
                 newDAO.insertSignalData(traceNum, sig);

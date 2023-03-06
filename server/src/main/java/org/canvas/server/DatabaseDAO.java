@@ -84,24 +84,26 @@ public class DatabaseDAO {
         }
     }
 
-    public void insertKeyData(int traceCount, SignalKeyEntry smallKey) {
-        String name = smallKey.getSignalName() + traceCount;
-        StringBuilder temp = new StringBuilder();
-        temp.append("INSERT INTO ")
-                .append("keys" + traceCount)
-                .append(" VALUES (")
-                .append("\'")
-                .append(name)
-                .append("\'");
+    public void insertKeyData(int traceCount, SignalData sig) {
+        String name = sig.getName() + traceCount;
+        List<Integer> cutoffs = sig.getBucketCutoffs();
 
-        for (int i = 0; i < smallKey.getBucketCutoff().size(); i++) {
+        StringBuilder temp =
+                new StringBuilder()
+                        .append("INSERT INTO ")
+                        .append("keys" + traceCount)
+                        .append(" VALUES (")
+                        .append("\'")
+                        .append(name)
+                        .append("\'");
 
-            temp.append(", ").append(smallKey.getBucketCutoff().get(i));
+        for (int i = 0; i < cutoffs.size(); i++) {
+            temp.append(", ").append(cutoffs.get(i));
         }
         temp.append(")");
-        final String INSERT_KEY_DATA = temp.toString();
-        try (PreparedStatement statement = this.connection.prepareStatement(INSERT_KEY_DATA); ) {
+        final String insertKeyData = temp.toString();
 
+        try (PreparedStatement statement = this.connection.prepareStatement(insertKeyData); ) {
             statement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
