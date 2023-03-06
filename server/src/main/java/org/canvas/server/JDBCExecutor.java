@@ -31,9 +31,7 @@ public class JDBCExecutor {
             final int traceNum = newDAO.getTraceNum();
             Trace trace = new Trace(traceNum, "actual_real_trace");
             newDAO.insertTraceData(trace);
-
-            // do once
-            newDAO.createKeyTable(traceNum, 2);  // temp hardcoded size
+            newDAO.createKeyTable(traceNum, 60 * 20); // Hardcoded max size of 20 minutes, psql tables can have max 1600 cols
 
             for (File f : files) {
                 SignalData sig = MdfImporter.readCsvFileToSignalData(f);
@@ -42,11 +40,7 @@ public class JDBCExecutor {
                     continue;
                 }
 
-                ArrayList<Integer> bucketCutoffs = new ArrayList<Integer>();
-                bucketCutoffs.add(1);
-                bucketCutoffs.add(2);
-
-                Key key = new Key(sig.getName(), bucketCutoffs);
+                Key key = new Key(sig.getName(), sig.getBucketCutoffs(1.0));
                 newDAO.insertKeyData(traceNum, key);
 
                 newDAO.createSignalTable(traceNum, sig.getName());
