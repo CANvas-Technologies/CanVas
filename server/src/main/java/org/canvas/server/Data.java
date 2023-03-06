@@ -1,6 +1,6 @@
 package org.canvas.server;
 
-public class Data implements DataTransferObject {
+public class Data {
     private double timestamp;
     private double data;
 
@@ -17,7 +17,6 @@ public class Data implements DataTransferObject {
         return data;
     }
 
-    @Override
     public String toString() {
         return "Data {" + "timestamp=" + timestamp + ", data=" + data + '}';
     }

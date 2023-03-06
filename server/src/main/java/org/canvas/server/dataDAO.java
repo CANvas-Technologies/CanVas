@@ -6,12 +6,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
-public class dataDAO extends DataAccessObject {
+public class dataDAO {
+    Connection connection;
+
     public dataDAO(Connection connection) {
-        super(connection);
+        this.connection = connection;
     }
 
-    @Override
     public void createKeyTable(int traceNum, int size) {
         String name = "keys" + traceNum;
 
