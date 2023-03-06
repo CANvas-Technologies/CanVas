@@ -21,17 +21,14 @@ public class DatabaseDAO {
     }
 
     void createKeyTable(TraceHandle trace, int size) {
-        // signal_name | signal_data_table | indices ... ||||||||
-        // ------------|-------------------|-------------||||||||
-
-        // signal_data_table name length is 48 characters - signal_UUID_data
-        // e.g. signal_d8f35758-3610-47e5-9e11-b745d6154bf6_data
+        // signal_name | signal_uuid | indices ... ||||||||
+        // ------------|-------------|-------------||||||||
         StringBuilder temp =
                 new StringBuilder()
                         .append("CREATE TABLE IF NOT EXISTS ")
                         .append(DatabaseDAO.wrapQuotes(trace.getKeyTableName()))
                         .append(" (signal_name varchar(1000) PRIMARY KEY," +
-                                " signal_data_table char(48)");
+                                " signal_uuid char(36)");
         for (int i = 0; i < size; i++) {
             temp.append(", B" + i + " INT DEFAULT NULL");
         }
@@ -100,7 +97,7 @@ public class DatabaseDAO {
                         .append(DatabaseDAO.wrapQuotes(trace.getKeyTableName()))
                         .append(" VALUES (")
                         .append(DatabaseDAO.wrapSingleQuotes(sigData.getName()))
-                        .append(", " + DatabaseDAO.wrapSingleQuotes(sig.getDataTableName()));
+                        .append(", " + DatabaseDAO.wrapSingleQuotes(sig.getUUIDString()));
 
         for (int i = 0; i < cutoffs.size(); i++) {
             temp.append(", ").append(cutoffs.get(i));
