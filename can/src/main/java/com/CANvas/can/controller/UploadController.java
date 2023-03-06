@@ -45,8 +45,7 @@ public class UploadController {
             e.printStackTrace();
         }
 
-        return file.getOriginalFilename();
-        //return "redirect:/uploadStatus";
+        return "redirect:/uploadStatus";
 
 
     }

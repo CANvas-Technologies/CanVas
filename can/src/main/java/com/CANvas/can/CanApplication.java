@@ -8,7 +8,9 @@ import org.springframework.context.annotation.Bean;
 
 @SpringBootApplication
 public class CanApplication<TomcatConnectorCustomizer> {
-	private int maxUploadSizeInMb = 10 * 1024 * 1024; // 10 MB
+	private int maxUploadSizeInMb = 100 * 1024 * 1024; // 10 MB
+
+
 
 	public static void main(String[] args) throws Exception {
 		SpringApplication.run(CanApplication.class, args);
