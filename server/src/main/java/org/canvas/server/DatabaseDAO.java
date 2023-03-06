@@ -18,6 +18,16 @@ public class DatabaseDAO {
 
     public DatabaseDAO(Connection connection) {
         this.connection = connection;
+
+        // Set up the primary traces table if it doesn't exist.
+        final String createPrimaryTable =
+            "CREATE TABLE IF NOT EXISTS traces (trace_uuid char(36) PRIMARY KEY, trace_name varchar(1000), trace_key_table char(47))";
+        try (PreparedStatement statement = this.connection.prepareStatement(createPrimaryTable); ) {
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
     }
 
     void createKeyTable(TraceHandle trace, int size) {
