@@ -23,12 +23,15 @@ public class DatabaseDAO {
     void createKeyTable(TraceHandle trace, int size) {
         // signal_name | signal_data_table | indices ... ||||||||
         // ------------|-------------------|-------------||||||||
+
+        // signal_data_table name length is 48 characters - signal_UUID_data
+        // e.g. signal_d8f35758-3610-47e5-9e11-b745d6154bf6_data
         StringBuilder temp =
                 new StringBuilder()
                         .append("CREATE TABLE IF NOT EXISTS ")
                         .append(DatabaseDAO.wrapQuotes(trace.getKeyTableName()))
-                        .append(" (signal_name varchar(50) DEFAULT NULL PRIMARY KEY," +
-                                " signal_data_table varchar(50) DEFAULT NULL");
+                        .append(" (signal_name varchar(1000) PRIMARY KEY," +
+                                " signal_data_table char(48)");
         for (int i = 0; i < size; i++) {
             temp.append(", B" + i + " INT DEFAULT NULL");
         }
@@ -49,8 +52,8 @@ public class DatabaseDAO {
                                 .append("CREATE TABLE IF NOT EXISTS ")
                                 .append(DatabaseDAO.wrapQuotes(sig.getDataTableName()))
                                 .append(
-                                        " (timestamp FLOAT(20) DEFAULT NULL PRIMARY KEY,data"
-                                                + " FLOAT(20) DEFAULT NULL)"))
+                                        " (timestamp FLOAT(20) PRIMARY KEY,data"
+                                                + " FLOAT(20))"))
                         .toString();
         try (PreparedStatement statement =
                 this.connection.prepareStatement(CREATE_SIGNAL_TABLE); ) {
@@ -116,10 +119,11 @@ public class DatabaseDAO {
     public TraceHandle newTrace(String name) {
         TraceHandle trace = new TraceHandle(name);
 
-        final String INSERT_TRACE = "INSERT INTO traces VALUES (?,?)";
+        final String INSERT_TRACE = "INSERT INTO traces VALUES (?,?,?)";
         try (PreparedStatement statement = this.connection.prepareStatement(INSERT_TRACE); ) {
             statement.setString(1, trace.getUUIDString());
             statement.setString(2, trace.getName());
+            statement.setString(3, trace.getKeyTableName());
             statement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
