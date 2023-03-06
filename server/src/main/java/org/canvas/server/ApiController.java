@@ -16,7 +16,8 @@ public class ApiController {
     @GetMapping(value = "/api/get_trace_uuid/{name}", produces = "text/plain")
     @ResponseBody
     public String getTraceUUID(@PathVariable("name") String name) {
-        DatabaseConnectionManager dcm = new DatabaseConnectionManager("localhost", "candata", "postgres", "password");
+        DatabaseConnectionManager dcm =
+                new DatabaseConnectionManager("localhost", "candata", "postgres", "password");
 
         String uuid = "";
         try {
@@ -35,8 +36,11 @@ public class ApiController {
 
     @GetMapping(value = "/api/get_signal_uuid/{trace_uuid}/{signal_name}", produces = "text/plain")
     @ResponseBody
-    public String getTraceUUID(@PathVariable("trace_uuid") String traceUUID, @PathVariable("signal_name") String signalName) {
-        DatabaseConnectionManager dcm = new DatabaseConnectionManager("localhost", "candata", "postgres", "password");
+    public String getTraceUUID(
+            @PathVariable("trace_uuid") String traceUUID,
+            @PathVariable("signal_name") String signalName) {
+        DatabaseConnectionManager dcm =
+                new DatabaseConnectionManager("localhost", "candata", "postgres", "password");
 
         String uuid = "";
         try {
@@ -51,5 +55,48 @@ public class ApiController {
         }
 
         return uuid;
+    }
+
+    @GetMapping(
+            value = "/api/get_data_by_bucket/{trace_uuid}/{signal_uuid}/{bucket}",
+            produces = "text/plain")
+    @ResponseBody
+    public String getDataByBucket(
+            @PathVariable("trace_uuid") String traceUUID,
+            @PathVariable("signal_uuid") String signalUUID,
+            @PathVariable("bucket") int bucket) {
+        DatabaseConnectionManager dcm =
+                new DatabaseConnectionManager("localhost", "candata", "postgres", "password");
+
+        String dataInBucket = "";
+        try {
+            Connection connection = dcm.getConnection();
+            DatabaseDAO db = new DatabaseDAO(connection);
+
+            dataInBucket = db.getDataInBucket(traceUUID, signalUUID, bucket);
+        } catch (Throwable e) {
+            e.printStackTrace();
+            return "";
+        }
+
+        return dataInBucket;
+    }
+
+    @GetMapping(value = "/api/delete_trace/{trace_uuid}", produces = "text/plain")
+    @ResponseBody
+    public String deleteTrace(@PathVariable("trace_uuid") String traceUUID) {
+        DatabaseConnectionManager dcm =
+                new DatabaseConnectionManager("localhost", "candata", "postgres", "password");
+
+        try {
+            Connection connection = dcm.getConnection();
+            DatabaseDAO db = new DatabaseDAO(connection);
+
+            return db.deleteTrace(traceUUID);
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
+
+        return "Failed to delete trace {" + traceUUID + "}.";
     }
 }
