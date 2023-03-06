@@ -9,7 +9,7 @@ import com.opencsv.CSVReader;
 
 public class MdfImporter {
     // read in signal data, not bucketized
-    public static List<Data> readCsvFileToSignalData(File file) throws Exception {
+    public static SignalData readCsvFileToSignalData(File file) throws Exception {
         try {
             // make CSV reader
             CSVReader csv = new CSVReader(new FileReader(file));
@@ -57,7 +57,7 @@ public class MdfImporter {
             }
 
             csv.close();
-            return vals;
+            return new SignalData(signalName, vals);
         } catch (Exception e) {
             throw e;
         }
