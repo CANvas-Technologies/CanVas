@@ -70,6 +70,12 @@
             <artifactId>spotless-maven-plugin</artifactId>
             <version>2.34.0</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>exec-maven-plugin</artifactId>
+            <version>3.1.0</version>
+        </dependency>
     </dependencies>
 
     <build>
