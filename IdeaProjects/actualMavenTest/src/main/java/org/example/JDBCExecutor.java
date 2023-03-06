@@ -15,7 +15,7 @@ public class JDBCExecutor {
         DatabaseConnectionManager dcm = new DatabaseConnectionManager("localhost",
                 "candata", "postgres", "password");
 
-        try {
+       /* try {
             Connection connection = dcm.getConnection();
             Statement statement = connection.createStatement();
             //SETUP INSTRUCTIONS:
@@ -56,6 +56,6 @@ public class JDBCExecutor {
         }
         catch(SQLException e) {
             e.printStackTrace();
-        }
+        }*/
     }
 }
