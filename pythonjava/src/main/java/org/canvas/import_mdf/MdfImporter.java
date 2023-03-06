@@ -1,18 +1,79 @@
 package org.canvas.import_mdf;
 
 import java.io.File;
+import java.io.FileReader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+
+import com.opencsv.CSVReader;
+import org.apache.commons.*;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 
 public class MdfImporter {
     public static void main(String[] args) throws Exception {
         Path mdf = Paths.get("./examples/audi/output1.mf4");
         Path dbc = Paths.get("./examples/audi/audi.dbc");
-        System.out.println(convertMdfToCsvFiles(mdf, dbc));
+        File[] files = convertMdfToCsvFiles(mdf, dbc);
+        System.out.println(readCsvFileToSignalData(files[1]));
     }
 
-    public static List<String> convertMdfToCsvFiles(Path mf4, Path dbc) throws Exception {
+    // read in signal data, not bucketized
+    public static List<Pair<Double, Double>> readCsvFileToSignalData(File file) throws Exception {
+        try {
+            // make CSV reader
+            CSVReader csv = new CSVReader(new FileReader(file));
+
+            // for errors
+            String path = "('" + file.getAbsolutePath() + "')";
+
+            String[] header = null;
+
+            if ((header = csv.readNext()) == null) {
+                csv.close();
+                throw new Exception("Expected at least one line in signal csv " + path);
+            }
+
+            if (header.length > 2) {
+                // skip this file
+                // todo: handle multiple signals per channel group
+                System.err.println("Skipping " + file.getAbsolutePath());
+                return null;
+            }
+
+            if (header.length < 2) {
+                csv.close();
+                throw new Exception("Header in csv file is too short " + path);
+            }
+
+            if (!header[0].equals("timestamps")) {
+                csv.close();
+                throw new Exception("First column should be 'timestamps' but is actually " + header[0] + " " + path);
+            }
+
+            String signalName = header[1];
+
+            System.out.println("Processing " + signalName);
+
+            // todo: for now, all signal values are doubles, but there can actually be different kinds
+            List<Pair<Double, Double>> vals = new ArrayList<Pair<Double, Double>>();
+
+            String[] line;
+            while ((line = csv.readNext()) != null) {
+                double timestamp = Double.parseDouble(line[0]);
+                double value = Double.parseDouble(line[1]);
+                vals.add(new ImmutablePair<>(timestamp, value));
+            }
+
+            csv.close();
+            return vals;
+        } catch (Exception e) {
+            throw e;
+        }
+    }
+
+    public static File[] convertMdfToCsvFiles(Path mf4, Path dbc) throws Exception {
         // call python to convert mdf to .csv files
         Process mdfpy =
                 new ProcessBuilder(
@@ -43,12 +104,6 @@ public class MdfImporter {
                     "Couldn't list in directory mdfpy should have made ('" + dir_name + "')");
         }
 
-        // get absolute path of each file
-        List<String> paths = new ArrayList<String>();
-        for (File f : files) {
-            paths.add(f.getAbsolutePath());
-        }
-
-        return paths;
+        return files;
     }
 }
