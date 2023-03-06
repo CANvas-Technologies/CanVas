@@ -1,31 +1,24 @@
 package org.canvas.server;
 
 public class Data implements DataTransferObject {
-    private long timestamp;
-    private long data;
+    private double timestamp;
+    private double data;
 
-    public long getTimestamp() {
-        return timestamp;
-    }
-
-    public void setTimestamp(long timestamp) {
+    public Data(double timestamp, double data) {
         this.timestamp = timestamp;
+        this.data = data;
     }
 
-    public long getTime() {
+    public double getTimestamp() {
         return timestamp;
     }
 
-    public long getData() {
+    public double getData() {
         return data;
-    }
-
-    public void setData(long data) {
-        this.data = data;
     }
 
     @Override
     public String toString() {
-        return "Data{" + "timestamp=" + timestamp + ", data=" + data + '}';
+        return "Data {" + "timestamp=" + timestamp + ", data=" + data + '}';
     }
 }

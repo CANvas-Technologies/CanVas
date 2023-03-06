@@ -56,10 +56,8 @@ public class dataDAO extends DataAccessObject {
         }
     }
 
-    public Data setDataVal(long timestamp, long data) {
-        Data newData = new Data();
-        newData.setData(data);
-        newData.setTimestamp(timestamp);
+    public Data setDataVal(double timestamp, double data) {
+        Data newData = new Data(timestamp, data);
         return newData;
     }
 
@@ -69,8 +67,8 @@ public class dataDAO extends DataAccessObject {
                 ((new StringBuilder()).append("INSERT INTO ").append(name).append(" VALUES(?,?)"))
                         .toString();
         try (PreparedStatement statement = this.connection.prepareStatement(INSERT_DATA); ) {
-            statement.setLong(1, data.getTime());
-            statement.setLong(2, data.getData());
+            statement.setDouble(1, data.getTimestamp());
+            statement.setDouble(2, data.getData());
             statement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
