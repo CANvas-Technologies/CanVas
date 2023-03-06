@@ -2,31 +2,40 @@ package org.canvas.server;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
 public class DatabaseDAO {
     Connection connection;
 
+    static String wrapQuotes(String s) {
+        return "\"" + s + "\"";
+    }
+
+    static String wrapSingleQuotes(String s) {
+        return "\'" + s + "\'";
+    }
+
     public DatabaseDAO(Connection connection) {
         this.connection = connection;
     }
 
-    public void createKeyTable(int traceNum, int size) {
-        String name = "keys" + traceNum;
-
-        StringBuilder temp = new StringBuilder();
-        temp.append("CREATE TABLE IF NOT EXISTS ")
-                .append(name)
-                .append(" (signal_name varchar(50) DEFAULT NULL PRIMARY KEY");
+    void createKeyTable(TraceHandle trace, int size) {
+        // signal_name | signal_data_table | indices ... ||||||||
+        // ------------|-------------------|-------------||||||||
+        StringBuilder temp =
+                new StringBuilder()
+                        .append("CREATE TABLE IF NOT EXISTS ")
+                        .append(DatabaseDAO.wrapQuotes(trace.getKeyTableName()))
+                        .append(" (signal_name varchar(50) DEFAULT NULL PRIMARY KEY," +
+                                " signal_data_table varchar(50) DEFAULT NULL");
         for (int i = 0; i < size; i++) {
             temp.append(", B" + i + " INT DEFAULT NULL");
         }
         temp.append(" )");
-        final String CREATE_KEY_TABLE = temp.toString();
-        try (PreparedStatement statement = this.connection.prepareStatement(CREATE_KEY_TABLE); ) {
+        final String createKeyTable = temp.toString();
 
+        try (PreparedStatement statement = this.connection.prepareStatement(createKeyTable); ) {
             statement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -34,12 +43,11 @@ public class DatabaseDAO {
         }
     }
 
-    public void createSignalTable(int traceCount, String signalName) {
-        String name = signalName.replace('.', '$') + traceCount;
+    void createSignalTable(SignalHandle sig) {
         final String CREATE_SIGNAL_TABLE =
                 ((new StringBuilder())
                                 .append("CREATE TABLE IF NOT EXISTS ")
-                                .append(name)
+                                .append(DatabaseDAO.wrapQuotes(sig.getDataTableName()))
                                 .append(
                                         " (timestamp FLOAT(20) DEFAULT NULL PRIMARY KEY,data"
                                                 + " FLOAT(20) DEFAULT NULL)"))
@@ -54,18 +62,14 @@ public class DatabaseDAO {
         }
     }
 
-    public SignalDatapoint setDataVal(double timestamp, double data) {
-        SignalDatapoint newData = new SignalDatapoint(timestamp, data);
-        return newData;
-    }
-
-    public void insertSignalData(int traceCount, SignalData sig) {
-        String name = sig.getName().replace('.', '$') + traceCount;
+    void insertSignalData(SignalHandle sig, SignalData sigData) {
         final String INSERT_DATA =
-                ((new StringBuilder()).append("INSERT INTO ").append(name).append(" VALUES(?,?)"))
+                ((new StringBuilder()).append("INSERT INTO ")
+                        .append(DatabaseDAO.wrapQuotes(sig.getDataTableName()))
+                        .append(" VALUES(?,?)"))
                         .toString();
 
-        List<SignalDatapoint> data = sig.getData();
+        List<SignalDatapoint> data = sigData.getData();
         try (PreparedStatement statement = this.connection.prepareStatement(INSERT_DATA); ) {
             int i = 0;
             for (SignalDatapoint d : data) {
@@ -84,18 +88,16 @@ public class DatabaseDAO {
         }
     }
 
-    public void insertKeyData(int traceCount, SignalData sig) {
-        String name = sig.getName() + traceCount;
-        List<Integer> cutoffs = sig.getBucketCutoffs();
+    void insertKeyData(TraceHandle trace, SignalHandle sig, SignalData sigData) {
+        List<Integer> cutoffs = sigData.getBucketCutoffs();
 
         StringBuilder temp =
                 new StringBuilder()
                         .append("INSERT INTO ")
-                        .append("keys" + traceCount)
+                        .append(DatabaseDAO.wrapQuotes(trace.getKeyTableName()))
                         .append(" VALUES (")
-                        .append("\'")
-                        .append(name)
-                        .append("\'");
+                        .append(DatabaseDAO.wrapSingleQuotes(sigData.getName()))
+                        .append(", " + DatabaseDAO.wrapSingleQuotes(sig.getDataTableName()));
 
         for (int i = 0; i < cutoffs.size(); i++) {
             temp.append(", ").append(cutoffs.get(i));
@@ -111,31 +113,30 @@ public class DatabaseDAO {
         }
     }
 
-    public int getTraceNum() {
-        try (PreparedStatement statement =
-                this.connection.prepareStatement("SELECT COUNT(*) FROM traces"); ) {
-            int output = 0;
-            ResultSet resultSet = statement.executeQuery();
-            while (resultSet.next()) {
-                output = resultSet.getInt(1);
-            }
-            return output;
+    public TraceHandle newTrace(String name) {
+        TraceHandle trace = new TraceHandle(name);
 
-        } catch (SQLException e) {
-            e.printStackTrace();
-            throw new RuntimeException(e);
-        }
-    }
-
-    public void insertTraceData(Trace trace) {
         final String INSERT_TRACE = "INSERT INTO traces VALUES (?,?)";
         try (PreparedStatement statement = this.connection.prepareStatement(INSERT_TRACE); ) {
-            statement.setInt(1, trace.getId());
+            statement.setString(1, trace.getUUIDString());
             statement.setString(2, trace.getName());
             statement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
             throw new RuntimeException(e);
         }
+
+        this.createKeyTable(trace, 60 * 20); // hardcoded 20 minutes max
+
+        return trace;
+    }
+
+    public SignalHandle newSignal(TraceHandle trace, SignalData sigData) {
+        SignalHandle sig = new SignalHandle(trace, sigData.getName());
+        this.insertKeyData(trace, sig, sigData);
+        this.createSignalTable(sig);
+        this.insertSignalData(sig, sigData);
+
+        return sig;
     }
 }

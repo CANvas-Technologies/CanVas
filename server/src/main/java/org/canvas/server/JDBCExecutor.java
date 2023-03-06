@@ -25,26 +25,17 @@ public class JDBCExecutor {
             // CREATE TABLE traces (trace_number INT DEFAULT NULL PRIMARY KEY, trace_name
             // varchar(50) DEFAULT NULL);
 
-            // get future trace number
-            final int traceNum = newDAO.getTraceNum();
-            Trace trace = new Trace(traceNum, "actual_real_trace");
-            newDAO.insertTraceData(trace);
-            newDAO.createKeyTable(
-                    traceNum,
-                    60 * 20); // Hardcoded max size of 20 minutes, psql tables can have max
-            // 1600 cols
+            TraceHandle trace = newDAO.newTrace("actual_real_trace");
 
             for (File f : files) {
-                SignalData sig = MdfImporter.readCsvFileToSignalData(f);
+                SignalData sigData = MdfImporter.readCsvFileToSignalData(f);
 
-                if (sig == null) { // this file was skipped
+                if (sigData == null) { // this file was skipped
                     continue;
                 }
 
-                newDAO.insertKeyData(traceNum, sig);
-
-                newDAO.createSignalTable(traceNum, sig.getName());
-                newDAO.insertSignalData(traceNum, sig);
+                SignalHandle sig = newDAO.newSignal(trace, sigData);
+                System.out.println("Added signal with UUID " + sig.getUUIDString());
             }
         } catch (Exception e) {
             e.printStackTrace();
