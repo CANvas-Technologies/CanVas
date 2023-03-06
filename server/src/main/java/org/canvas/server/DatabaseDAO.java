@@ -277,7 +277,8 @@ public class DatabaseDAO {
             e.printStackTrace();
             throw new RuntimeException(e);
         }
-        for (i=0;i<tableNames.length(); i++){
+
+        for (int i=0;i<tableNames.size(); i++){
             dropThatTable(tableNames.get(i));
         }
         dropThatTable(traceUUID + "_keys");
