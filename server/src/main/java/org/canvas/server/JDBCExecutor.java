@@ -17,7 +17,7 @@ public class JDBCExecutor {
 
         try {
             Connection connection = dcm.getConnection();
-            dataDAO newDAO = new dataDAO(connection);
+            DatabaseDAO newDAO = new DatabaseDAO(connection);
 
             // SETUP INSTRUCTIONS:
             // Make sure your database is called candata, and you have a traces table premade
@@ -41,7 +41,7 @@ public class JDBCExecutor {
                     continue;
                 }
 
-                Key key = new Key(sig.getName(), sig.getBucketCutoffs(1.0));
+                SignalKeyEntry key = new SignalKeyEntry(sig.getName(), sig.getBucketCutoffs(1.0));
                 newDAO.insertKeyData(traceNum, key);
 
                 newDAO.createSignalTable(traceNum, sig.getName());

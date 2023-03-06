@@ -1,10 +1,10 @@
 package org.canvas.server;
 
-public class Data {
+public class SignalDatapoint {
     private double timestamp;
     private double data;
 
-    public Data(double timestamp, double data) {
+    public SignalDatapoint(double timestamp, double data) {
         this.timestamp = timestamp;
         this.data = data;
     }

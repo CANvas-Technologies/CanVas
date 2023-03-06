@@ -50,13 +50,13 @@ public class MdfImporter {
 
             // todo: for now, all signal values are doubles, but there can actually be different
             // kinds
-            List<Data> vals = new ArrayList<Data>();
+            List<SignalDatapoint> vals = new ArrayList<SignalDatapoint>();
 
             String[] line;
             while ((line = csv.readNext()) != null) {
                 double timestamp = Double.parseDouble(line[0]);
                 double value = Double.parseDouble(line[1]);
-                vals.add(new Data(timestamp, value));
+                vals.add(new SignalDatapoint(timestamp, value));
             }
 
             csv.close();

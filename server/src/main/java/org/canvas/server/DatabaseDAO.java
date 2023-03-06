@@ -6,10 +6,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
-public class dataDAO {
+public class DatabaseDAO {
     Connection connection;
 
-    public dataDAO(Connection connection) {
+    public DatabaseDAO(Connection connection) {
         this.connection = connection;
     }
 
@@ -54,8 +54,8 @@ public class dataDAO {
         }
     }
 
-    public Data setDataVal(double timestamp, double data) {
-        Data newData = new Data(timestamp, data);
+    public SignalDatapoint setDataVal(double timestamp, double data) {
+        SignalDatapoint newData = new SignalDatapoint(timestamp, data);
         return newData;
     }
 
@@ -65,10 +65,10 @@ public class dataDAO {
                 ((new StringBuilder()).append("INSERT INTO ").append(name).append(" VALUES(?,?)"))
                         .toString();
 
-        List<Data> data = sig.getData();
+        List<SignalDatapoint> data = sig.getData();
         try (PreparedStatement statement = this.connection.prepareStatement(INSERT_DATA); ) {
             int i = 0;
-            for (Data d : data) {
+            for (SignalDatapoint d : data) {
                 statement.setDouble(1, d.getTimestamp());
                 statement.setDouble(2, d.getData());
                 statement.addBatch();
@@ -84,7 +84,7 @@ public class dataDAO {
         }
     }
 
-    public void insertKeyData(int traceCount, Key smallKey) {
+    public void insertKeyData(int traceCount, SignalKeyEntry smallKey) {
         String name = smallKey.getSignalName() + traceCount;
         StringBuilder temp = new StringBuilder();
         temp.append("INSERT INTO ")

@@ -5,9 +5,9 @@ import java.util.List;
 
 class SignalData {
     private String name;
-    private List<Data> data;
+    private List<SignalDatapoint> data;
 
-    public SignalData(String name, List<Data> data) {
+    public SignalData(String name, List<SignalDatapoint> data) {
         this.name = name;
         this.data = data;
     }
@@ -16,7 +16,7 @@ class SignalData {
         return this.name;
     }
 
-    public List<Data> getData() {
+    public List<SignalDatapoint> getData() {
         return this.data;
     }
 

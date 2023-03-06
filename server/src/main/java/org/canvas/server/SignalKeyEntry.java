@@ -3,9 +3,9 @@ package org.canvas.server;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Key {
+public class SignalKeyEntry {
 
-    public Key(String name, List<Integer> inList) {
+    public SignalKeyEntry(String name, List<Integer> inList) {
         signalName = name.replace('.', '$');
         bucketCutoffs = inList;
     }
