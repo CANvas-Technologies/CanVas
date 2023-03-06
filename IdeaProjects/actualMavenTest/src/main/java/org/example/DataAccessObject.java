@@ -31,5 +31,7 @@ public abstract class DataAccessObject <E extends DataTransferObject>  {
     public abstract ArrayList<Integer> getBucketVals(int traceNum, String name, int bucket );
 
 
+    public abstract void deleteData(int traceNum, String signalName, long timestamp );
+
 
 }

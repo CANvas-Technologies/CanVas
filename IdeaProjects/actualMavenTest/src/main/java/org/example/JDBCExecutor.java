@@ -51,7 +51,7 @@ public class JDBCExecutor {
             newDAO.insertSignalData(traceNum,"testSignal",newData);
             //List<Integer> temp = newDAO.getBucketVals(17,"testsignal17",1);
             newDAO.retrieveData(17,"testsignal",1);
-
+            newDAO.deleteData(17,"testsignal",2);
 
         }
         catch(SQLException e) {

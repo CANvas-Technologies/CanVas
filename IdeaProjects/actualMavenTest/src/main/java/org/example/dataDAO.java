@@ -190,4 +190,18 @@ public class dataDAO extends DataAccessObject{
         }
     }
 
+    public void deleteData(int traceNum, String signalName, long timestamp){
+        String name = signalName + traceNum;
+        String DELETE_DATA = ((new StringBuilder()).append("DELETE FROM ").append(name).append(" WHERE timestamp =").append(timestamp)).toString();
+        try(PreparedStatement statement = this.connection.prepareStatement(DELETE_DATA);){
+
+
+            statement.executeUpdate();
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+    }
+
 }
