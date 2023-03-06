@@ -2,3 +2,6 @@ target/
 
 # csv output dirs
 out_*
+
+# uploada
+uploads/
