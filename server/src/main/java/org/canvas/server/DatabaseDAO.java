@@ -38,7 +38,7 @@ public class DatabaseDAO {
         StringBuilder temp =
                 new StringBuilder()
                         .append("CREATE TABLE IF NOT EXISTS ")
-                        .append(DatabaseDAO.wrapQuotes(trace.getKeyTableName()))
+                        .append(wrapQuotes(trace.getKeyTableName()))
                         .append(
                                 " (signal_name varchar(1000) PRIMARY KEY,"
                                         + " signal_uuid char(36)");
@@ -60,7 +60,7 @@ public class DatabaseDAO {
         final String CREATE_SIGNAL_TABLE =
                 ((new StringBuilder())
                                 .append("CREATE TABLE IF NOT EXISTS ")
-                                .append(DatabaseDAO.wrapQuotes(sig.getDataTableName()))
+                                .append(wrapQuotes(sig.getDataTableName()))
                                 .append(" (timestamp FLOAT(20) PRIMARY KEY,data" + " FLOAT(20))"))
                         .toString();
         try (PreparedStatement statement =
@@ -77,7 +77,7 @@ public class DatabaseDAO {
         final String INSERT_DATA =
                 ((new StringBuilder())
                                 .append("INSERT INTO ")
-                                .append(DatabaseDAO.wrapQuotes(sig.getDataTableName()))
+                                .append(wrapQuotes(sig.getDataTableName()))
                                 .append(" VALUES(?,?)"))
                         .toString();
 
@@ -106,10 +106,10 @@ public class DatabaseDAO {
         StringBuilder temp =
                 new StringBuilder()
                         .append("INSERT INTO ")
-                        .append(DatabaseDAO.wrapQuotes(trace.getKeyTableName()))
+                        .append(wrapQuotes(trace.getKeyTableName()))
                         .append(" VALUES (")
-                        .append(DatabaseDAO.wrapSingleQuotes(sigData.getName()))
-                        .append(", " + DatabaseDAO.wrapSingleQuotes(sig.getUUIDString()));
+                        .append(wrapSingleQuotes(sigData.getName()))
+                        .append(", " + wrapSingleQuotes(sig.getUUIDString()));
 
         for (int i = 0; i < cutoffs.size(); i++) {
             temp.append(", ").append(cutoffs.get(i));
@@ -153,6 +153,7 @@ public class DatabaseDAO {
         return sig;
     }
 
+    // For now, trace names must be unique.
     public String getTraceUUID(String traceName) {
         String output = "";
         final String getUUID = "SELECT trace_uuid FROM traces WHERE trace_name =?";
@@ -171,7 +172,7 @@ public class DatabaseDAO {
     }
 
     public String getSignalUUID(String traceUUID, String signalName) {
-        String name = traceUUID + "_keys";
+        String name = "trace_" + traceUUID + "_keys";
         String output = "";
         final String GET_TABLE_NAME = "SELECT signal_data_table FROM ? WHERE signal_name = ?";
         try (PreparedStatement statement = this.connection.prepareStatement(GET_TABLE_NAME); ) {
@@ -198,10 +199,9 @@ public class DatabaseDAO {
                     .append("SELECT b")
                     .append(bucketVal - 1)
                     .append(" FROM ")
-                    .append(traceUUID)
-                    .append("_keys")
-                    .append(" WHERE signal_data_table = ")
-                    .append(signalUUID);
+                    .append(wrapQuotes("trace_ " + traceUUID + "_keys"))
+                    .append(" WHERE signal_uuid = ")
+                    .append(wrapSingleQuotes(signalUUID));
             final String BOTTOM_COMMAND = bottomTemp.toString();
             try (PreparedStatement statement = this.connection.prepareStatement(BOTTOM_COMMAND); ) {
 
@@ -218,10 +218,10 @@ public class DatabaseDAO {
         topTemp.append("SELECT b")
                 .append(bucketVal)
                 .append(" FROM ")
-                .append(traceUUID)
+                .append(wrapQuotes("trace_ " + traceUUID + "_keys"))
                 .append("_keys")
-                .append(" WHERE signal_data_table = ")
-                .append(signalUUID);
+                .append(" WHERE signal_uuid = ")
+                .append(wrapSingleQuotes(signalUUID));
         final String TOP_COMMAND = topTemp.toString();
         try (PreparedStatement statement = this.connection.prepareStatement(TOP_COMMAND); ) {
 
@@ -243,7 +243,7 @@ public class DatabaseDAO {
         StringBuilder temp = new StringBuilder();
         List<Integer> bucketBounds = getBucketCutoffs(traceUUID, signalUUID, bucketVal);
         temp.append("SELECT * FROM ")
-                .append(signalUUID)
+                .append(wrapQuotes("signal_ " + signalUUID + "_data"))
                 .append(" WHERE timestamp > ")
                 .append(bucketBounds.get(0))
                 .append(" AND timestamp <= ")
