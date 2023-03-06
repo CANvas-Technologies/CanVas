@@ -8,7 +8,7 @@ import java.util.*;
 
 public class MdfImporter {
     // read in signal data, not bucketized
-    public static SignalData readCsvFileToSignalData(File file) throws Exception {
+    public static SignalData readCsvFileToSignalData(File file) throws Throwable {
         try {
             // make CSV reader
             CSVReader csv = new CSVReader(new FileReader(file));
@@ -66,7 +66,7 @@ public class MdfImporter {
         }
     }
 
-    public static File[] convertMdfToCsvFiles(Path mf4, Path dbc) throws Exception {
+    public static File[] convertMdfToCsvFiles(Path mf4, Path dbc) throws Throwable {
         // call python to convert mdf to .csv files
         Process mdfpy =
                 new ProcessBuilder(
