@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.ArrayList;
 import java.sql.ResultSet;
 public class DatabaseDAO {
     Connection connection;
@@ -179,7 +180,7 @@ public class DatabaseDAO {
         return output;
     }
 
-    public String getBucketCutoffs(String traceUUID, String signalUUID, int bucketVal){
+    public ArrayList<Integer> getBucketCutoffs(String traceUUID, String signalUUID, int bucketVal){
         ArrayList<Integer> bucketVals= new ArrayList<Integer>();
         StringBuilder bottomTemp = new StringBuilder();
         if(bucketVal<=0){
@@ -241,5 +242,47 @@ public class DatabaseDAO {
             throw new RuntimeException(e);
         }
         return output;
+    }
+    public void dropThatTable(String tableName){
+        final String DROP_COMMAND = "DROP TABLE " + wrapQuotes(tableName);
+        try (PreparedStatement statement = this.connection.prepareStatement(DROP_COMMAND); ) {
+
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+    }
+    public String deleteTrace(String traceName){
+        String traceUUID = getTraceUUID(traceName);
+        ArrayList<String> tableNames= new ArrayList<String>();
+        StringBuilder temp = new StringBuilder();
+        temp.append("SELECT signal_data_table FROM ").append(traceUUID).append("_keys");
+        final String GET_NAMES = temp.toString();
+        try (PreparedStatement statement = this.connection.prepareStatement(GET_NAMES); ) {
+
+            ResultSet resultSet = statement.executeQuery();
+            while(resultSet.next()){
+                //System.out.println(resultSet.getInt(1));
+                tableNames.add(resultSet.getString("signal_data_table"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+        for (i=0;i<tableNames.length(); i++){
+            dropThatTable(tableNames.get(i));
+        }
+        dropThatTable(traceUUID + "_keys");
+        final String REMOVE_TRACE_COMMAND = "DELETE FROM traces WHERE trace_uuid = " + wrapSingleQuotes(traceUUID);
+        try (PreparedStatement statement = this.connection.prepareStatement(REMOVE_TRACE_COMMAND); ) {
+
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+        //final String getNames = temp.toString()
+        return "ALL TABLES DROPPED, TRACE INSTANCE REMOVED";
     }
 }
