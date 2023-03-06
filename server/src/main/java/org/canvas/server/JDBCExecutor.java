@@ -14,7 +14,8 @@ public class JDBCExecutor {
 
         try {
             Connection connection = dcm.getConnection();
-            Statement statement = connection.createStatement();
+            dataDAO newDAO = new dataDAO(connection);
+
             // SETUP INSTRUCTIONS:
             // Make sure your database is called candata, and you have a traces table premade
             // according to this command:
@@ -39,21 +40,30 @@ public class JDBCExecutor {
             // inserting into the
             // key table as you go.
 
-            ArrayList<Integer> bucketCutoffs = new ArrayList<Integer>();
-            bucketCutoffs.add(1);
-            bucketCutoffs.add(2);
-            Key newKey = new Key("testSignal", bucketCutoffs);
-            dataDAO newDAO = new dataDAO(connection);
-
+            // get future trace number
             int traceNum = newDAO.getTraceNum();
+
+            // Start building new trace
             Trace trace = new Trace(traceNum, "testTrace");
             newDAO.insertTraceData(trace);
-            newDAO.createKeyTable(traceNum, bucketCutoffs.size());
 
-            newDAO.createSignalTable(traceNum, "testSignal");
-            newDAO.insertKeyData(traceNum, newKey);
-            Data newData = new Data(1, 1);
-            newDAO.insertSignalData(traceNum, "testSignal", newData);
+                // Get bucket cutoffs for this signal
+                ArrayList<Integer> bucketCutoffs = new ArrayList<Integer>();
+                bucketCutoffs.add(1);
+                bucketCutoffs.add(2);
+
+                // do once
+                newDAO.createKeyTable(traceNum, bucketCutoffs.size());
+
+                // Make key entry for this signal
+                Key newKey = new Key("testSignal", bucketCutoffs);
+                newDAO.insertKeyData(traceNum, newKey);
+
+                // Populate signal data
+                newDAO.createSignalTable(traceNum, "testSignal");
+                Data newData = new Data(1, 1);
+                newDAO.insertSignalData(traceNum, "testSignal", newData);
+
         } catch (SQLException e) {
             e.printStackTrace();
         }

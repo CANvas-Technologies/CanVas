@@ -42,7 +42,7 @@
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>3.1.0</version>
                 <configuration>
-                    <mainClass>org.canvas.server/org.canvas.server.Main</mainClass>
+                    <mainClass>org.canvas.server/org.canvas.server.JDBCExecutor</mainClass>
                 </configuration>
             </plugin>
 

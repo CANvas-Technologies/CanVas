@@ -104,7 +104,7 @@ public class dataDAO extends DataAccessObject {
     public int getTraceNum() {
         try (PreparedStatement statement =
                 this.connection.prepareStatement("SELECT COUNT(*) FROM traces"); ) {
-            int output = 10;
+            int output = 0;
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 output = resultSet.getInt(1);
