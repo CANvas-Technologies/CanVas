@@ -9,8 +9,4 @@ COPY pythonjava /home/app/pythonjava
 WORKDIR /home/app/server
 RUN mvn clean package
 
-# FROM openjdk-19-jre-slim
-
-# FROM openjdk:19-jre-slim
-# COPY --from=build /home/app/target/canvas-server-0.1.0.jar /canvas-server.jar
-ENTRYPOINT ["java", "-jar", "/home/app/server/target/canvas-server-0.1.0.jar"]
+ENTRYPOINT ["java", "-jar", "/home/app/server/target/canvas-server-0.1.1.jar"]
