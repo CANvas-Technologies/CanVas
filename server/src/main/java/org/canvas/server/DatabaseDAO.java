@@ -10,6 +10,24 @@ import java.util.List;
 public class DatabaseDAO {
     Connection connection;
 
+    public static DatabaseDAO LocalDatabase() {
+        String host = System.getenv("CANVAS_DB_HOST");
+        String dbName = System.getenv("CANVAS_DB_DATABASE_NAME");
+        String user = System.getenv("CANVAS_DB_USER");
+        String password = System.getenv("CANVAS_DB_PASSWORD");
+        if (password == null) {
+            password = "";
+        }
+        DatabaseConnectionManager db = new DatabaseConnectionManager(host, dbName, user, password);
+
+        try {
+            DatabaseDAO dao = new DatabaseDAO(db.getConnection());
+            return dao;
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     static String wrapQuotes(String s) {
         return "\"" + s + "\"";
     }

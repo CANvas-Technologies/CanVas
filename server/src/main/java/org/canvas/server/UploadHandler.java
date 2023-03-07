@@ -2,9 +2,9 @@ package org.canvas.server;
 
 import java.io.File;
 import java.nio.file.Path;
-import java.sql.Connection;
 
 public class UploadHandler {
+    static DatabaseDAO db = DatabaseDAO.LocalDatabase();
 
     public static TraceHandle HandleUpload(Path input) throws Throwable {
         TraceHandle trace = null;
@@ -12,13 +12,7 @@ public class UploadHandler {
         // pass input for both mf4 and dbc; asammdf handles it okay.
         File[] files = MdfImporter.convertMdfToCsvFiles(input, input);
 
-        DatabaseConnectionManager dcm =
-                new DatabaseConnectionManager("db", "candata", "postgres", "password");
-
         try {
-            Connection connection = dcm.getConnection();
-            DatabaseDAO newDAO = new DatabaseDAO(connection);
-
             // SETUP INSTRUCTIONS:
             // Make sure your database is called candata, and you have a traces table premade
             // according to this command:
@@ -30,7 +24,7 @@ public class UploadHandler {
             // CREATE TABLE traces (trace_uuid char(36) PRIMARY KEY, trace_name varchar(1000),
             // trace_key_table char(47));
 
-            trace = newDAO.newTrace("actual_real_trace");
+            trace = db.newTrace("actual_real_trace");
 
             for (File f : files) {
                 SignalData sigData = MdfImporter.readCsvFileToSignalData(f);
@@ -39,7 +33,7 @@ public class UploadHandler {
                     continue;
                 }
 
-                SignalHandle sig = newDAO.newSignal(trace, sigData);
+                SignalHandle sig = db.newSignal(trace, sigData);
                 System.out.println("Added signal with UUID " + sig.getUUIDString());
             }
         } catch (Exception e) {
