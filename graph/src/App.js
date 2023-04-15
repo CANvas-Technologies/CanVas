@@ -119,8 +119,8 @@ export default function App() {
             <div>
             <form onSubmit={submit}>
                 <input
-                    value={name}
-                    onChange={(event) =>
+                    defaultValue={name}
+                    onClick={(event) =>
                         setName(event.target.value)}
                     type="text"
                     placeholder="trace name..."
