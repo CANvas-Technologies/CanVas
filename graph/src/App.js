@@ -10,6 +10,7 @@ import {
     Tooltip,
     Legend
 } from "recharts";
+import {render} from "@testing-library/react";
 
 const data = [
     {
@@ -61,17 +62,19 @@ const data = [
 
 export default function App() {
     const [name, setName] = useState("");
+    const [signal, setSignal] = useState("");
     const [wasClicked, setClicked ] = useState(null);
     const [newData, setData] = useState(null);
-    async function getData(traceName){
+    async function getData(traceName, signalName){
         fetch(
-            "http://localhost:8080/graphing/getSignalData/" + traceName + "/CAN1.OBD2.ParameterID_Service01"
+            "http://localhost:8080/graphing/getSignalData/" + traceName + "/" + signalName
         ).then((response) => response.json())
             .then(setData);
 
     }
     function displayGraph(newData){
-        return(<LineChart
+       render
+        (<LineChart
             width={2000}
             height={500}
             data={newData}
@@ -104,29 +107,67 @@ export default function App() {
 
         setClicked(0)
     };
+    const getGraph = async() => {
+        await getData(name,signal);
+        //displayGraph(newData);
+    }
 
 
 
-    useEffect(() => {
-        if(name){
-            getData("testing");
-            displayGraph(newData)
-        }
-    }, [name, newData]);
         console.log(name)
         console.log(newData)
         return (
             <div>
             <form onSubmit={submit}>
                 <input
-                    defaultValue={name}
-                    onClick={(event) =>
-                        setName(event.target.value)}
+                    value={name}
+                    onChange={(event) =>
+                        setName(event.target.value)
+
+                    }
                     type="text"
                     placeholder="trace name..."
                 />
-                <button>ADD</button>
+                <input
+                    value={signal}
+                    onChange={(event) =>
+                        setSignal(event.target.value)
+
+                    }
+                    type="text"
+                    placeholder="signal name..."
+                />
+                <button onClick={getGraph}>ADD
+
+                </button>
             </form>
+                {newData ?
+                <LineChart
+                    width={2000}
+                    height={500}
+                    data={newData}
+                    margin={{
+                        top: 5,
+                        right: 30,
+                        left: 20,
+                        bottom: 5
+                    }}
+                >
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="timestamp" />
+                    <YAxis type = "number" domain = {[0,100]} />
+                    <Tooltip />
+                    <Legend />
+                    <Line
+                        type="monotone"
+                        dataKey="data point"
+                        stroke="#8884d8"
+                        activeDot={{ r: 8 }}
+                    />
+
+                </LineChart>
+                    : <p> Enter a trace name to see the graph</p>
+                }
             </div>
         );
 }
