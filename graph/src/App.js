@@ -11,6 +11,8 @@ import {
     Legend
 } from "recharts";
 import {render} from "@testing-library/react";
+import {Box, Slider} from "@mui/material";
+import axios from "axios";
 
 const data = [
     {
@@ -65,12 +67,22 @@ export default function App() {
     const [signal, setSignal] = useState("");
     const [wasClicked, setClicked ] = useState(null);
     const [newData, setData] = useState(null);
+    const [bucketVal, setBuckets] = useState([0,0]);
+
+    const [upperBucket, setUpper] = useState(100);
     async function getData(traceName, signalName){
         fetch(
             "http://localhost:8080/graphing/getSignalData/" + traceName + "/" + signalName
         ).then((response) => response.json())
             .then(setData);
 
+    }
+    async function getTrace(traceName){
+        const response = await axios.get('http://localhost:8080/graphing/getTrace' + traceName);
+        setUpper(response.data)
+    }
+    function valuetext(bucketVal) {
+        return `${bucketVal}°C`;
     }
     function displayGraph(newData){
        render
@@ -99,6 +111,18 @@ export default function App() {
 
         </LineChart>);
     }
+
+    const retrieveTrace = async() => {
+        await getTrace(name);
+
+        //displayGraph(newData);
+    }
+
+    const handleSlider = (event, newValue) => {
+        setBuckets(newValue);
+    };
+
+
     const submit = (e) => {
         e.preventDefault();
 
@@ -114,8 +138,8 @@ export default function App() {
 
 
 
-        console.log(name)
-        console.log(newData)
+        console.log(upperBucket)
+
         return (
             <div>
             <form onSubmit={submit}>
@@ -128,6 +152,12 @@ export default function App() {
                     type="text"
                     placeholder="trace name..."
                 />
+
+                <button onClick={retrieveTrace}>Submit Trace Name
+
+                </button>
+            </form>
+            <form>
                 <input
                     value={signal}
                     onChange={(event) =>
@@ -137,10 +167,20 @@ export default function App() {
                     type="text"
                     placeholder="signal name..."
                 />
-                <button onClick={getGraph}>ADD
+
+                <button onClick={getGraph}>Submit Signal Name
 
                 </button>
             </form>
+                <Box sx={{ width: 300 }}>
+                    <Slider
+                        getAriaLabel={() => 'Bucket bounds'}
+                        value={bucketVal}
+                        onChange={handleSlider}
+                        valueLabelDisplay="auto"
+                        getAriaValueText={valuetext}
+                    />
+                </Box>
                 {newData ?
                 <LineChart
                     width={2000}
