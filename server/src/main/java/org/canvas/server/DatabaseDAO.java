@@ -59,7 +59,7 @@ public class DatabaseDAO {
     void createSignalTable(SignalHandle sig) {
         final String CREATE_SIGNAL_TABLE =
                 ((new StringBuilder())
-                                .append("CREATE TABLE IF NOT EXISTS ")
+                                .append("CREATE TABLE IF NOT EXISTS")
                                 .append(wrapQuotes(sig.getDataTableName()))
                                 .append(" (timestamp FLOAT(20) PRIMARY KEY,data" + " FLOAT(20))"))
                         .toString();
@@ -147,8 +147,9 @@ public class DatabaseDAO {
     public SignalHandle newSignal(TraceHandle trace, SignalData sigData) {
         SignalHandle sig = new SignalHandle(trace, sigData.getName());
         this.insertKeyData(trace, sig, sigData);
-        this.insertSignalData(sig, sigData);
         this.createSignalTable(sig);
+        this.insertSignalData(sig, sigData);
+
 
         return sig;
     }
@@ -197,7 +198,7 @@ public class DatabaseDAO {
                     .append("SELECT b")
                     .append(bucketVal - 1)
                     .append(" FROM ")
-                    .append(wrapQuotes("trace_ " + traceUUID + "_keys"))
+                    .append(wrapQuotes("trace_" + traceUUID + "_keys"))
                     .append(" WHERE signal_uuid = ")
                     .append(wrapSingleQuotes(signalUUID));
             final String BOTTOM_COMMAND = bottomTemp.toString();
@@ -216,7 +217,7 @@ public class DatabaseDAO {
         topTemp.append("SELECT b")
                 .append(bucketVal)
                 .append(" FROM ")
-                .append(wrapQuotes("trace_ " + traceUUID + "_keys"))
+                .append(wrapQuotes("trace_" + traceUUID + "_keys"))
                 .append("_keys")
                 .append(" WHERE signal_uuid = ")
                 .append(wrapSingleQuotes(signalUUID));
@@ -254,11 +255,12 @@ public class DatabaseDAO {
     public String getDataInBucket(String traceName, String stringName, int bucketVal) {
         String output = "";
         String traceUUID = getTraceUUID(traceName);
+        //System.out.println("GOT TRACE UUID:" + traceUUID);
         String signalUUID = getSignalUUID(traceUUID, stringName);
         StringBuilder temp = new StringBuilder();
         List<Integer> bucketBounds = getBucketCutoffs(traceUUID, signalUUID, bucketVal);
         temp.append("SELECT * FROM ")
-                .append(wrapQuotes("signal_ " + signalUUID + "_data"))
+                .append(wrapQuotes("signal_" + signalUUID + "_data"))
                 .append(" WHERE timestamp > ")
                 .append(bucketBounds.get(0))
                 .append(" AND timestamp <= ")
@@ -330,5 +332,25 @@ public class DatabaseDAO {
         }
         // final String getNames = temp.toString()
         return "ALL TABLES DROPPED, TRACE INSTANCE REMOVED";
+    }
+
+    public int getBucketCount(String traceName){
+        String traceUUID = getTraceUUID(traceName);
+        int count = 0;
+        StringBuilder temp = new StringBuilder();
+        temp.append("SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE table_catalog = 'candata' AND table_name = ").append(wrapSingleQuotes("trace_" + traceUUID + "_keys"));
+        final String GET_COUNT = temp.toString();
+        try (PreparedStatement statement = this.connection.prepareStatement(GET_COUNT); ) {
+
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                // System.out.println(resultSet.getInt(1));
+                count = resultSet.getInt(1) -2;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+        return count;
     }
 }
