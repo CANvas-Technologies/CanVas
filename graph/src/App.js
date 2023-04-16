@@ -72,14 +72,15 @@ export default function App() {
     const [upperBucket, setUpper] = useState(100);
     async function getData(traceName, signalName){
         fetch(
-            "http://localhost:8080/graphing/getSignalData/" + traceName + "/" + signalName
+            "http://localhost:8080/graphing/getSignalData/" + traceName + "/" + signalName + "/" + bucketVal[0] + "/" + bucketVal[1]
         ).then((response) => response.json())
             .then(setData);
 
     }
-    async function getTrace(traceName){
-        const response = await axios.get('http://localhost:8080/graphing/getTrace' + traceName);
+    async function getBucket(traceName,signalName){
+        const response = await axios.get('http://localhost:8080/graphing/getTrace/' + traceName + "/" + signalName);
         setUpper(response.data)
+        setClicked(1)
     }
     function valuetext(bucketVal) {
         return `${bucketVal}°C`;
@@ -112,8 +113,9 @@ export default function App() {
         </LineChart>);
     }
 
-    const retrieveTrace = async() => {
-        await getTrace(name);
+    const retrieveBucket = async(e) => {
+        e.preventDefault();
+        await getBucket(name, signal);
 
         //displayGraph(newData);
     }
@@ -123,26 +125,21 @@ export default function App() {
     };
 
 
-    const submit = (e) => {
+
+    const getGraph = async(e) => {
         e.preventDefault();
-
-        alert(`${name},${wasClicked}`)
-        setName("")
-
-        setClicked(0)
-    };
-    const getGraph = async() => {
         await getData(name,signal);
         //displayGraph(newData);
     }
 
 
 
-        console.log(upperBucket)
+        console.log(bucketVal[0])
+        console.log(bucketVal[1])
 
         return (
             <div>
-            <form onSubmit={submit}>
+            <form>
                 <input
                     value={name}
                     onChange={(event) =>
@@ -152,12 +149,6 @@ export default function App() {
                     type="text"
                     placeholder="trace name..."
                 />
-
-                <button onClick={retrieveTrace}>Submit Trace Name
-
-                </button>
-            </form>
-            <form>
                 <input
                     value={signal}
                     onChange={(event) =>
@@ -168,10 +159,12 @@ export default function App() {
                     placeholder="signal name..."
                 />
 
-                <button onClick={getGraph}>Submit Signal Name
+                <button onClick={retrieveBucket}>Retrieve Bucket Bounds
 
                 </button>
+
             </form>
+
                 <Box sx={{ width: 300 }}>
                     <Slider
                         getAriaLabel={() => 'Bucket bounds'}
@@ -179,8 +172,16 @@ export default function App() {
                         onChange={handleSlider}
                         valueLabelDisplay="auto"
                         getAriaValueText={valuetext}
+                        min = {0}
+                        max={upperBucket}
                     />
                 </Box>
+                {wasClicked ?
+                <button onClick={getGraph}>Display Graph
+
+                </button>
+                : <p>Please retrieve bucket bounds</p>
+                }
                 {newData ?
                 <LineChart
                     width={2000}
@@ -208,6 +209,7 @@ export default function App() {
                 </LineChart>
                     : <p> Enter a trace name to see the graph</p>
                 }
+
             </div>
         );
 }

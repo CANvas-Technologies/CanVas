@@ -334,23 +334,49 @@ public class DatabaseDAO {
         return "ALL TABLES DROPPED, TRACE INSTANCE REMOVED";
     }
 
-    public int getBucketCount(String traceName){
+    public int getBucketCount(String traceName, String signalName){
         String traceUUID = getTraceUUID(traceName);
+        String signalUUID = getSignalUUID(traceUUID,signalName);
         int count = 0;
-        StringBuilder temp = new StringBuilder();
-        temp.append("SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE table_catalog = 'candata' AND table_name = ").append(wrapSingleQuotes("trace_" + traceUUID + "_keys"));
-        final String GET_COUNT = temp.toString();
-        try (PreparedStatement statement = this.connection.prepareStatement(GET_COUNT); ) {
 
-            ResultSet resultSet = statement.executeQuery();
-            while (resultSet.next()) {
-                // System.out.println(resultSet.getInt(1));
-                count = resultSet.getInt(1) -2;
+        for (int i=0; i<1200; i++){
+            List<Integer> bucketBounds = getBucketCutoffs(traceUUID, signalUUID, i);
+            if(i == 0){
+                count = count + 1;
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            throw new RuntimeException(e);
+            else{
+                StringBuilder temp = new StringBuilder();
+                temp.append("SELECT ").append(wrapSingleQuotes("b" + i)).append(" FROM ").append(wrapQuotes("signal_" + signalUUID + "_data"))
+                        .append(" WHERE timestamp = " + bucketBounds.get(1));
+                final String GET_COUNT = temp.toString();
+                try (PreparedStatement statement = this.connection.prepareStatement(GET_COUNT); ) {
+
+                    ResultSet resultSet = statement.executeQuery();
+                    if(resultSet.next() == false){
+                        count = count + 1;
+                    }
+                    else{
+                        do  {
+                            System.out.println("Shit's fucked man");
+                            // System.out.println(resultSet.getInt(1));
+                            //count = count + resultSet.getInt(1);
+                        } while(resultSet.next());
+                    }
+
+
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                    throw new RuntimeException(e);
+                }
+            }
+          /*  StringBuilder temp = new StringBuilder();
+            temp.append("SELECT SUM(CASE WHEN \'b" + i + "\' IS NULL THEN 0 ELSE 1 END) FROM ").append(wrapQuotes("trace_" + traceUUID + "_keys"))
+                    .append(" WHERE signal_name = ").append(wrapSingleQuotes(signalName));
+            final String GET_COUNT = temp.toString(); */
+
+
         }
+
         return count;
     }
 }
