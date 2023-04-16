@@ -1,6 +1,8 @@
 import './App.css';
 import React, {useRef} from "react";
 import { useState, useEffect } from "react";
+import Dropdown from 'react-dropdown';
+import 'react-dropdown/style.css';
 import {
     LineChart,
     Line,
@@ -68,8 +70,9 @@ export default function App() {
     const [wasClicked, setClicked ] = useState(null);
     const [newData, setData] = useState(null);
     const [bucketVal, setBuckets] = useState([0,0]);
-
+    const [signalNames, setSignalNames] = useState(null);
     const [upperBucket, setUpper] = useState(100);
+    const defaultOption = "default";
     async function getData(traceName, signalName){
         fetch(
             "http://localhost:8080/graphing/getSignalData/" + traceName + "/" + signalName + "/" + bucketVal[0] + "/" + bucketVal[1]
@@ -81,6 +84,13 @@ export default function App() {
         const response = await axios.get('http://localhost:8080/graphing/getTrace/' + traceName + "/" + signalName);
         setUpper(response.data)
         setClicked(1)
+    }
+
+    async function getSignalNames(traceName){
+        const response = await axios.get("http://localhost:8080/graphing/getSignalNames/" + traceName);
+        setSignalNames(response.data)
+
+
     }
     function valuetext(bucketVal) {
         return `${bucketVal}°C`;
@@ -115,7 +125,7 @@ export default function App() {
 
     const retrieveBucket = async(e) => {
         e.preventDefault();
-        await getBucket(name, signal);
+        await getBucket(name, signal.value);
 
         //displayGraph(newData);
     }
@@ -124,17 +134,22 @@ export default function App() {
         setBuckets(newValue);
     };
 
-
-
-    const getGraph = async(e) => {
+    const handleSignalNames = async(e) => {
         e.preventDefault();
-        await getData(name,signal);
-        //displayGraph(newData);
+        await getSignalNames(name);
     }
 
 
 
-        console.log(upperBucket)
+
+    const getGraph = async(e) => {
+        e.preventDefault();
+        await getData(name,signal.value);
+        //displayGraph(newData);
+    }
+
+
+        console.log(signal)
 
         return (
             <div>
@@ -148,21 +163,22 @@ export default function App() {
                     type="text"
                     placeholder="trace name..."
                 />
-                <input
-                    value={signal}
-                    onChange={(event) =>
-                        setSignal(event.target.value)
-
-                    }
-                    type="text"
-                    placeholder="signal name..."
-                />
-
-                <button onClick={retrieveBucket}>Retrieve Signal Data
+                <button onClick={handleSignalNames}>Retrieve Signal Names
 
                 </button>
 
             </form>
+                {signalNames ?
+                <Dropdown options={signalNames} onChange={setSignal} value={defaultOption} placeholder="Select a signal" />
+                : <p></p>
+                }
+                {signalNames?
+                <button onClick={retrieveBucket}>Retrieve Signal Data
+
+                </button>
+                :<p></p>
+                }
+
 
                 <Box sx={{ width: 300 }}>
                     <Slider

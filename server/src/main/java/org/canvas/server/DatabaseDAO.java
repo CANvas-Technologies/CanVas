@@ -236,7 +236,7 @@ public class DatabaseDAO {
     public ArrayList<String> getSignalNames(String traceUUID){
         ArrayList<String> stringNames = new ArrayList<String>();
         StringBuilder temp = new StringBuilder();
-        temp.append("SELECT signal_name FROM ").append(wrapQuotes(traceUUID + "_keys"));
+        temp.append("SELECT signal_name FROM ").append(wrapQuotes("trace_" + traceUUID + "_keys"));
         final String GET_SIGNAL_NAMES = temp.toString();
         try (PreparedStatement statement = this.connection.prepareStatement(GET_SIGNAL_NAMES); ) {
 
