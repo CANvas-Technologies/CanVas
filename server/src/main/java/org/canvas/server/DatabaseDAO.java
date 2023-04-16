@@ -218,7 +218,6 @@ public class DatabaseDAO {
                 .append(bucketVal)
                 .append(" FROM ")
                 .append(wrapQuotes("trace_" + traceUUID + "_keys"))
-                .append("_keys")
                 .append(" WHERE signal_uuid = ")
                 .append(wrapSingleQuotes(signalUUID));
         final String TOP_COMMAND = topTemp.toString();
@@ -255,16 +254,25 @@ public class DatabaseDAO {
     public String getDataInBucket(String traceName, String stringName, int bucketVal) {
         String output = "";
         String traceUUID = getTraceUUID(traceName);
+        System.out.println(traceUUID);
         //System.out.println("GOT TRACE UUID:" + traceUUID);
         String signalUUID = getSignalUUID(traceUUID, stringName);
+        System.out.println(signalUUID);
         StringBuilder temp = new StringBuilder();
         List<Integer> bucketBounds = getBucketCutoffs(traceUUID, signalUUID, bucketVal);
         temp.append("SELECT * FROM ")
+                .append("( SELECT timestamp, data, ROW_NUMBER () OVER (ORDER BY timestamp) ")
+                .append("FROM ")
                 .append(wrapQuotes("signal_" + signalUUID + "_data"))
+                .append(") x WHERE ROW_NUMBER BETWEEN ")
+                .append(bucketBounds.get(0))
+                .append(" AND ")
+                .append(bucketBounds.get(1));
+                /*.append(wrapQuotes("signal_" + signalUUID + "_data"))
                 .append(" WHERE timestamp > ")
                 .append(bucketBounds.get(0))
                 .append(" AND timestamp <= ")
-                .append(bucketBounds.get(1));
+                .append(bucketBounds.get(1));*/
         final String RETRIEVE_COMMAND = temp.toString();
         try (PreparedStatement statement = this.connection.prepareStatement(RETRIEVE_COMMAND)) {
 
@@ -336,32 +344,45 @@ public class DatabaseDAO {
 
     public int getBucketCount(String traceName, String signalName){
         String traceUUID = getTraceUUID(traceName);
+        System.out.println(traceUUID);
         String signalUUID = getSignalUUID(traceUUID,signalName);
+        System.out.println(signalUUID);
         int count = 0;
 
         for (int i=0; i<1200; i++){
             List<Integer> bucketBounds = getBucketCutoffs(traceUUID, signalUUID, i);
+            //System.out.println(bucketBounds);
             if(i == 0){
                 count = count + 1;
             }
             else{
                 StringBuilder temp = new StringBuilder();
-                temp.append("SELECT ").append(wrapSingleQuotes("b" + i)).append(" FROM ").append(wrapQuotes("signal_" + signalUUID + "_data"))
-                        .append(" WHERE timestamp = " + bucketBounds.get(1));
+                /*temp.append("SELECT timestamp").append(" FROM ").append(wrapQuotes("signal_" + signalUUID + "_data"))
+                        .append(" WHERE timestamp >= " + bucketBounds.get(0))
+                        .append(" AND timestamp <= " + bucketBounds.get(1));*/
+                temp.append("SELECT * FROM")
+                        .append("( SELECT timestamp, ROW_NUMBER () OVER (ORDER BY timestamp) ")
+                        .append(" FROM")
+                        .append(wrapQuotes("signal_" + signalUUID + "_data"))
+                        .append(" )x")
+                        .append(" WHERE ROW_NUMBER = ")
+                        .append(bucketBounds.get(1));
                 final String GET_COUNT = temp.toString();
-                try (PreparedStatement statement = this.connection.prepareStatement(GET_COUNT); ) {
+                try (PreparedStatement statement = this.connection.prepareStatement(GET_COUNT, ResultSet.TYPE_SCROLL_SENSITIVE,
+                        ResultSet.CONCUR_UPDATABLE); ) {
 
                     ResultSet resultSet = statement.executeQuery();
-                    if(resultSet.next() == false){
-                        count = count + 1;
+                    if(resultSet.next()){
+                        if(resultSet.getInt(1) !=0){
+                            count = count +1;
+                            System.out.println(resultSet.getFloat(1));
+                        }
+
+
+                        resultSet.beforeFirst();
+
                     }
-                    else{
-                        do  {
-                            System.out.println("Shit's fucked man");
-                            // System.out.println(resultSet.getInt(1));
-                            //count = count + resultSet.getInt(1);
-                        } while(resultSet.next());
-                    }
+
 
 
                 } catch (SQLException e) {

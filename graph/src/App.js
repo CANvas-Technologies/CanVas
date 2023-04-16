@@ -88,7 +88,7 @@ export default function App() {
     function displayGraph(newData){
        render
         (<LineChart
-            width={2000}
+            width={1500}
             height={500}
             data={newData}
             margin={{
@@ -100,7 +100,7 @@ export default function App() {
         >
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="timestamp" />
-            <YAxis type = "number" domain = {[0,100]} />
+            <YAxis type = "number" domain = {['dataMin', 'dataMax']} />
             <Tooltip />
             <Legend />
             <Line
@@ -134,8 +134,7 @@ export default function App() {
 
 
 
-        console.log(bucketVal[0])
-        console.log(bucketVal[1])
+        console.log(upperBucket)
 
         return (
             <div>
@@ -159,7 +158,7 @@ export default function App() {
                     placeholder="signal name..."
                 />
 
-                <button onClick={retrieveBucket}>Retrieve Bucket Bounds
+                <button onClick={retrieveBucket}>Retrieve Signal Data
 
                 </button>
 
@@ -175,12 +174,13 @@ export default function App() {
                         min = {0}
                         max={upperBucket}
                     />
+                    <p>Select seconds of data to display</p>
                 </Box>
                 {wasClicked ?
                 <button onClick={getGraph}>Display Graph
 
                 </button>
-                : <p>Please retrieve bucket bounds</p>
+                : <p></p>
                 }
                 {newData ?
                 <LineChart
