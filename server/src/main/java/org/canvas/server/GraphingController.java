@@ -24,28 +24,32 @@ public class GraphingController {
         return "graphing";
     }
 
-    @CrossOrigin
+    @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(
-            value = "/graphing/getSignalData/{traceName}/{signalName}",
+            value = "/graphing/getSignalData/{traceName}/{signalName}/{lowerBucket}/{upperBucket}",
             produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public String getSignalData(
             @PathVariable("traceName") String traceName,
-            @PathVariable("signalName") String signalName) {
+            @PathVariable("signalName") String signalName,
+            @PathVariable("lowerBucket") String lowerBucket,
+            @PathVariable("upperBucket") String upperBucket) {
 
         String output = "TESTING";
         String[] toInsert;
         String[] blank = new String[] {""};
         JSONArray values = new JSONArray();
         JSONArray nullVals = new JSONArray();
+        int lower = Integer.parseInt(lowerBucket);
+        int upper = Integer.parseInt(upperBucket);
         String[] finalArray;
         List<String> exampleList = new ArrayList<String>();
         List<String> blankList = new ArrayList<String>();
         try {
-            int bucketCount = db.getBucketCount(traceName, signalName);
-            System.out.println(bucketCount);
+        //    int bucketCount = db.getBucketCount(traceName, signalName);
+            // System.out.println(bucketCount);
             // JSONObject values = new JSONObject();
-            for (int i = 0; i < bucketCount; i++) {
+            for (int i = lower; i < upper; i++) {
                 output = db.getDataInBucket(traceName, signalName, i);
 
                 toInsert = output.split("\n");
