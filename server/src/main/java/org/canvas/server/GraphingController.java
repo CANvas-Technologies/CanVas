@@ -1,7 +1,5 @@
 package org.canvas.server;
 
-import java.sql.Array;
-import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
 import org.json.JSONArray;
@@ -46,9 +44,6 @@ public class GraphingController {
         List<String> exampleList = new ArrayList<String>();
         List<String> blankList = new ArrayList<String>();
         try {
-        //    int bucketCount = db.getBucketCount(traceName, signalName);
-            // System.out.println(bucketCount);
-            // JSONObject values = new JSONObject();
             for (int i = lower; i < upper; i++) {
                 output = db.getDataInBucket(traceName, signalName, i);
 
@@ -56,13 +51,9 @@ public class GraphingController {
 
                 for (String element : toInsert) {
                     String[] tempList = element.split(" ", 2);
-                    System.out.println(tempList[0]);
                     if (tempList[0] != "") {
                         String tempTime = (tempList[0].split(":", 2))[1];
-                        System.out.println(tempTime);
-                        // System.out.println(tempList[0]);
                         String tempData = (tempList[1].split(" ", 3))[2];
-                        System.out.println(tempData);
                         JSONObject tempValues = new JSONObject();
                         tempValues.put("timestamp", tempTime);
                         tempValues.put("data point", tempData);
@@ -75,8 +66,6 @@ public class GraphingController {
             e.printStackTrace();
             return "";
         }
-        // System.out.println("Normal return here");
-        // System.out.println(values);
         return values.toString();
     }
 
@@ -90,7 +79,6 @@ public class GraphingController {
 
         try {
             int bucketCount = db.getBucketCount(traceName, signalName);
-            System.out.println(bucketCount);
             output = output + bucketCount;
         } catch (Throwable e) {
             e.printStackTrace();
@@ -99,12 +87,11 @@ public class GraphingController {
 
         return output;
     }
+
     @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/graphing/getSignalNames/{traceName}")
     @ResponseBody
-    public ArrayList<String> getSignalNames(
-            @PathVariable("traceName") String traceName
-            ) {
+    public ArrayList<String> getSignalNames(@PathVariable("traceName") String traceName) {
         ArrayList<String> output = new ArrayList<String>();
         ArrayList<String> blank = new ArrayList<String>();
         try {
@@ -117,5 +104,4 @@ public class GraphingController {
 
         return output;
     }
-
 }
