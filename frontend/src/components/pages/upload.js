@@ -9,13 +9,12 @@ export default function UploadPage(){
     return (
         <>
         <h1 className='upload'> Upload Files </h1>
-        <p className="upload-heading">
+        {/* <p className="upload-heading">
             Input trace name here:
-        </p>
+        </p> */}
         <FileUploadSingle />
         <Footer />
         </>
-
         );
 
 }

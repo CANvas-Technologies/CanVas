@@ -3,6 +3,13 @@ import { ChangeEvent, useState} from 'react';
 import axios from 'axios';
 import cors from 'cors'
 
+import Button from '@mui/material/Button';
+import Divider from '@mui/material/Divider';
+
+import TextField from '@mui/material/TextField';
+import Input from '@mui/material/Input';
+import { FormControl, FormLabel } from '@mui/material';
+
 function FileUploadSingle() {
 
   const [file, setFile] = useState();
@@ -29,25 +36,19 @@ function FileUploadSingle() {
 
 
   return (
-    <div>
 
-      <div classname='input-areas'>
-          <form>
-              <input
+      <Divider classname='input-areas'>
+          <FormControl>
+              <FormLabel>Enter Name:</FormLabel>
+              <TextField
                   value = {name}
                   onChange = {(event) => setName(event.target.value)}
-                  type = 'text'
-                  placeholder = 'trace name...'
+                  label = 'trace name'
               />
-          </form>
-      </div>
-      <input type="file" onChange={handleFileChange} />
-
-      <div>{file && `${file.name} - ${file.type}`}</div>
-
-      <button onClick={uploadFile}>Upload</button>
-
-    </div>
+              <Input type="file" onChange={handleFileChange} hidden/>
+              <Button onClick={uploadFile}>Upload</Button>
+          </FormControl>
+      </Divider>
   );
 }
 
