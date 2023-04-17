@@ -81,13 +81,9 @@ public class GraphingController {
     public String getTrace(
             @PathVariable("traceName") String traceName,
             @PathVariable("signalName") String signalName) {
-        DatabaseConnectionManager dcm =
-                new DatabaseConnectionManager("localhost", "candata", "postgres", "password");
         String output = "";
 
         try {
-            Connection connection = dcm.getConnection();
-            DatabaseDAO db = new DatabaseDAO(connection);
             int bucketCount = db.getBucketCount(traceName, signalName);
             System.out.println(bucketCount);
             output = output + bucketCount;
@@ -98,4 +94,25 @@ public class GraphingController {
 
         return output;
     }
+    @CrossOrigin(origins = "http://localhost:3000")
+    @RequestMapping(value = "/graphing/getSignalNames/{traceName}")
+    @ResponseBody
+    public ArrayList<String> getSignalNames(
+            @PathVariable("traceName") String traceName
+            ) {
+        ArrayList<String> output = new ArrayList<String>();
+        ArrayList<String> blank = new ArrayList<String>();
+        try {
+            String trace_uuid = db.getTraceUUID(traceName);
+            output = db.getSignalNames(trace_uuid);
+
+
+        } catch (Throwable e) {
+            e.printStackTrace();
+            return blank;
+        }
+
+        return output;
+    }
+
 }

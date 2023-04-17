@@ -37,6 +37,7 @@ public class UploadController {
 
             // We use a UUID for the filename, which avoids collisions and mitigates malicious input
             String throwAwayUUID = UUID.randomUUID().toString();
+            Files.createDirectories(Paths.get(UPLOADED_FOLDER));
             Path path = Paths.get(UPLOADED_FOLDER + "/" + throwAwayUUID);
             Files.write(path, bytes);
 
