@@ -423,7 +423,7 @@ public class DatabaseDAO {
     public ArrayList<String> getTraceNames(String email) {
         ArrayList<String> stringNames = new ArrayList<String>();
         StringBuilder temp = new StringBuilder();
-        temp.append("SELECT trace_name FROM traces WHERE email = ").append(email);
+        temp.append("SELECT trace_name FROM traces WHERE email = ").append(wrapSingleQuotes(email));
         final String GET_TRACE_NAMES = temp.toString();
         try (PreparedStatement statement = this.connection.prepareStatement(GET_TRACE_NAMES); ) {
             ResultSet resultSet = statement.executeQuery();

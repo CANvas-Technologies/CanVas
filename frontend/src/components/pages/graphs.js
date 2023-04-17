@@ -85,6 +85,7 @@ const data = [
 
 export default function Graph() {
     const [name, setName] = useState("");
+    const [traceNames, setTraceNames] = useState("");
     const [signal, setSignal] = useState("");
     const [wasClicked, setClicked ] = useState(null);
     const [newData, setData] = useState(null);
