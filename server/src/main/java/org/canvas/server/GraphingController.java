@@ -1,5 +1,6 @@
 package org.canvas.server;
 
+import java.sql.Array;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
@@ -105,8 +106,6 @@ public class GraphingController {
         try {
             String trace_uuid = db.getTraceUUID(traceName);
             output = db.getSignalNames(trace_uuid);
-
-
         } catch (Throwable e) {
             e.printStackTrace();
             return blank;
