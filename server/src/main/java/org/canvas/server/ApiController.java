@@ -1,5 +1,6 @@
 package org.canvas.server;
 
+import java.sql.Connection;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -7,8 +8,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 public class ApiController {
-    DatabaseDAO db = DatabaseDAO.LocalDatabase();
-
     @GetMapping("/api")
     public String index() {
         return "api";
@@ -22,7 +21,7 @@ public class ApiController {
 
     @GetMapping(value = "/api/get_signal_uuid/{traceUUID}/{signalName}", produces = "text/plain")
     @ResponseBody
-    public String getTraceUUID(@PathVariable String traceUUID, @PathVariable String signalName) {
+    public String getSignalUUID(@PathVariable String traceUUID, @PathVariable String signalName) {
         return db.getSignalUUID(traceUUID, signalName);
     }
 
