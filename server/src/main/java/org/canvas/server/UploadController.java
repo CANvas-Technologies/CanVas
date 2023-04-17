@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.bind.annotation.PathVariable;
 
 @CrossOrigin(origins = "http://localhost:3000")
 @Controller
@@ -25,9 +26,9 @@ public class UploadController {
     }
 
     @CrossOrigin(origins = "http://localhost:3000")
-    @PostMapping("/upload")
+    @PostMapping("/upload/{name}")
     public String singleFileUpload(
-            @RequestParam("file") MultipartFile file, RedirectAttributes redirectAttributes) {
+            @RequestParam("file") MultipartFile file, @PathVariable("name") String name, RedirectAttributes redirectAttributes) {
 
         if (file.isEmpty()) {
             redirectAttributes.addFlashAttribute("message", "Please select a file to upload");
@@ -48,7 +49,7 @@ public class UploadController {
             TraceHandle trace = null;
 
             try {
-                trace = UploadHandler.HandleUpload(path);
+                trace = UploadHandler.HandleUpload(path, name);
             } catch (Throwable e) {
                 e.printStackTrace();
                 // return error

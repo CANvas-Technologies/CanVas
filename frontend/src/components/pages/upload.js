@@ -5,10 +5,13 @@ import React from "react";
 import FileUploadSingle from './fileUpload';
 import axios from "axios";
 
-export default function StartGraphing(){
+export default function UploadPage(){
     return (
         <>
-        <h1 className='startgraphing'> Start Graphing </h1>
+        <h1 className='upload'> Upload Files </h1>
+        <p className="upload-heading">
+            Input trace name here:
+        </p>
         <FileUploadSingle />
         <Footer />
         </>

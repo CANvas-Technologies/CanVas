@@ -8,7 +8,7 @@ export default function LinkSharing(){
 
     return (
         <>
-        <h1 className='linksharing'> LINK SHARING </h1>
+        <h1 className='graphs'> Graphs </h1>
 
         <Footer />
         </>

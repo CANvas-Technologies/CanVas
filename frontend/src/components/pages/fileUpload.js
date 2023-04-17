@@ -6,6 +6,7 @@ import cors from 'cors'
 function FileUploadSingle() {
 
   const [file, setFile] = useState();
+  const [name, setName] = useState("");
   const [downloadUri, setDownloadUri] = React.useState();
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -18,7 +19,7 @@ function FileUploadSingle() {
     try {
       const formData = new FormData();
       formData.append("file", file);
-      const API_URL = "http://localhost:8080/upload";
+      const API_URL = "http://localhost:8080/upload/" + name;
       const response = await axios.post(API_URL, formData);
       setDownloadUri(response.data.fileDownloadUri);
     } catch (err) {
@@ -30,6 +31,16 @@ function FileUploadSingle() {
   return (
     <div>
 
+      <div classname='input-areas'>
+          <form>
+              <input
+                  value = {name}
+                  onChange = {(event) => setName(event.target.value)}
+                  type = 'text'
+                  placeholder = 'trace name...'
+              />
+          </form>
+      </div>
       <input type="file" onChange={handleFileChange} />
 
       <div>{file && `${file.name} - ${file.type}`}</div>
