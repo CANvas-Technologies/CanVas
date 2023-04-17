@@ -29,10 +29,11 @@ import {
     YAxis,
     CartesianGrid,
     Tooltip,
-    Legend
+    Legend,
+    Label
 } from "recharts";
 import {render} from "@testing-library/react";
-import {Box, Slider} from "@mui/material";
+import {Box, Slider, Button} from "@mui/material";
 import axios from "axios";
 
 const data = [
@@ -127,13 +128,15 @@ export default function Graph() {
             }}
         >
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="timestamp" />
+            <XAxis dataKey="timestamp">
+                <Label value="timestamp (seconds)" offset={0} position="insideBottom" />
+            </XAxis>
             <YAxis type = "number" domain = {['dataMin', 'dataMax']} />
             <Tooltip />
             <Legend />
             <Line
                 type="monotone"
-                dataKey="data point"
+                dataKey="signal value:"
                 stroke="#8884d8"
                 activeDot={{ r: 8 }}
             />
@@ -185,26 +188,25 @@ export default function Graph() {
                     placeholder="email..."
                 />
             </form>
-                <button onClick={handleGetTraces}>Get Traces</button>
+                <Button  onClick={handleGetTraces}>Get Traces</Button >
                 {
                 traceNames ?
                     <Dropdown options={traceNames} onChange={setName} value={defaultOption} placeholder="Select a trace" />
                     : <p></p>
                 }
-                <button onClick={handleSignalNames}>Retrieve Signal Names
+                <Button  onClick={handleSignalNames}>Retrieve Signal Names
 
-                </button>
+                </Button >
                 {signalNames ?
                 <Dropdown options={signalNames} onChange={setSignal} value={defaultOption} placeholder="Select a signal" />
                 : <p></p>
                 }
                 {signalNames?
-                <button onClick={retrieveBucket}>Retrieve Signal Data
+                <Button  onClick={retrieveBucket}>Retrieve Signal Data
 
-                </button>
+                </Button >
                 :<p></p>
                 }
-
 
                 <Box sx={{ width: 300 }}>
                     <Slider
@@ -219,9 +221,9 @@ export default function Graph() {
                     <p>Select seconds of data to display</p>
                 </Box>
                 {wasClicked ?
-                <button onClick={getGraph}>Display Graph
+                <Button  onClick={getGraph}>Display Graph
 
-                </button>
+                </Button >
                 : <p></p>
                 }
                 {newData ?
@@ -237,7 +239,9 @@ export default function Graph() {
                     }}
                 >
                     <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="timestamp" />
+                    <XAxis dataKey="timestamp">
+                        <Label value="timestamp (seconds)" offset={50} position="insideBottom" />
+                    </XAxis>
                     <YAxis type = "number" domain = {[0,100]} />
                     <Tooltip />
                     <Legend />
