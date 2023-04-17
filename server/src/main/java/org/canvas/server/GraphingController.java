@@ -21,84 +21,83 @@ public class GraphingController {
         return "graphing";
     }
 
-    // @GetMapping(value = "/graphing/getSignalData/{traceName}/{signalName}", produces =
-    // "text/plain" )
 
-    // @CrossOrigin
-    // @RequestMapping(
-    //         value = "/graphing/getSignalData/{traceName}/{signalName}",
-    //         produces = MediaType.APPLICATION_JSON_VALUE)
-    // @ResponseBody
-    // public String getSignalData(
-    //         @PathVariable("traceName") String traceName,
-    //         @PathVariable("signalName") String signalName) {
-    //     DatabaseConnectionManager dcm =
-    //             new DatabaseConnectionManager("localhost", "candata", "postgres", "password");
 
-    //     String output = "TESTING";
-    //     String[] toInsert;
-    //     String[] blank = new String[] {""};
-    //     JSONArray values = new JSONArray();
-    //     JSONArray nullVals = new JSONArray();
-    //     String[] finalArray;
-    //     List<String> exampleList = new ArrayList<String>();
-    //     List<String> blankList = new ArrayList<String>();
-    //     try {
-    //         Connection connection = dcm.getConnection();
-    //         DatabaseDAO db = new DatabaseDAO(connection);
-    //         int bucketCount = db.getBucketCount(traceName);
-    //         System.out.println(bucketCount);
-    //         // JSONObject values = new JSONObject();
-    //         for (int i = 0; i < bucketCount; i++) {
-    //             output = db.getDataInBucket(traceName, signalName, i);
+     @CrossOrigin
+     @RequestMapping(
+             value = "/graphing/getSignalData/{traceName}/{signalName}",
+             produces = MediaType.APPLICATION_JSON_VALUE)
+     @ResponseBody
+     public String getSignalData(
+             @PathVariable("traceName") String traceName,
+             @PathVariable("signalName") String signalName) {
+         DatabaseConnectionManager dcm =
+                 new DatabaseConnectionManager("localhost", "candata", "postgres", "password");
 
-    //             toInsert = output.split("\n");
+         String output = "TESTING";
+         String[] toInsert;
+         String[] blank = new String[] {""};
+         JSONArray values = new JSONArray();
+         JSONArray nullVals = new JSONArray();
+         String[] finalArray;
+         List<String> exampleList = new ArrayList<String>();
+         List<String> blankList = new ArrayList<String>();
+         try {
+             Connection connection = dcm.getConnection();
+             DatabaseDAO db = new DatabaseDAO(connection);
+             int bucketCount = db.getBucketCount(traceName, signalName);
+             System.out.println(bucketCount);
+             // JSONObject values = new JSONObject();
+             for (int i = 0; i < bucketCount; i++) {
+                 output = db.getDataInBucket(traceName, signalName, i);
 
-    //             for (String element : toInsert) {
-    //                 String[] tempList = element.split(" ", 2);
-    //                 System.out.println(tempList[0]);
-    //                 if (tempList[0] != "") {
-    //                     String tempTime = (tempList[0].split(":", 2))[1];
-    //                     System.out.println(tempTime);
-    //                     // System.out.println(tempList[0]);
-    //                     String tempData = (tempList[1].split(" ", 3))[2];
-    //                     System.out.println(tempData);
-    //                     JSONObject tempValues = new JSONObject();
-    //                     tempValues.put("timestamp", tempTime);
-    //                     tempValues.put("data point", tempData);
-    //                     values.put(tempValues);
-    //                 }
-    //             }
-    //         }
+                 toInsert = output.split("\n");
 
-    //     } catch (Throwable e) {
-    //         e.printStackTrace();
-    //         return "";
-    //     }
-    //     // System.out.println("Normal return here");
-    //     // System.out.println(values);
-    //     return values.toString();
-    // }
+                 for (String element : toInsert) {
+                     String[] tempList = element.split(" ", 2);
+                     System.out.println(tempList[0]);
+                     if (tempList[0] != "") {
+                         String tempTime = (tempList[0].split(":", 2))[1];
+                         System.out.println(tempTime);
+                         // System.out.println(tempList[0]);
+                         String tempData = (tempList[1].split(" ", 3))[2];
+                         System.out.println(tempData);
+                         JSONObject tempValues = new JSONObject();
+                         tempValues.put("timestamp", tempTime);
+                         tempValues.put("data point", tempData);
+                         values.put(tempValues);
+                     }
+                 }
+             }
 
-    // @CrossOrigin(origins = "http://localhost:3000")
-    // @RequestMapping(value = "/graphing/getTrace/{traceName}", produces = "text/plain")
-    // @ResponseBody
-    // public String getTrace(@PathVariable("traceName") String traceName) {
-    //     DatabaseConnectionManager dcm =
-    //             new DatabaseConnectionManager("localhost", "candata", "postgres", "password");
-    //     String output = "";
+         } catch (Throwable e) {
+             e.printStackTrace();
+             return "";
+         }
+         // System.out.println("Normal return here");
+         // System.out.println(values);
+         return values.toString();
+     }
 
-    //     try {
-    //         Connection connection = dcm.getConnection();
-    //         DatabaseDAO db = new DatabaseDAO(connection);
-    //         int bucketCount = db.getBucketCount(traceName);
-    //         System.out.println(bucketCount);
-    //         output = output + bucketCount;
-    //     } catch (Throwable e) {
-    //         e.printStackTrace();
-    //         return "";
-    //     }
+     @CrossOrigin(origins = "http://localhost:3000")
+     @RequestMapping(value = "/graphing/getTrace/{traceName}/{signalName}", produces = "text/plain")
+     @ResponseBody
+     public String getTrace(@PathVariable("traceName") String traceName, @PathVariable("signalName") String signalName) {
+         DatabaseConnectionManager dcm =
+                 new DatabaseConnectionManager("localhost", "candata", "postgres", "password");
+         String output = "";
 
-    //     return output;
-    // }
+         try {
+             Connection connection = dcm.getConnection();
+             DatabaseDAO db = new DatabaseDAO(connection);
+             int bucketCount = db.getBucketCount(traceName, signalName);
+             System.out.println(bucketCount);
+             output = output + bucketCount;
+         } catch (Throwable e) {
+             e.printStackTrace();
+             return "";
+         }
+
+         return output;
+     }
 }
