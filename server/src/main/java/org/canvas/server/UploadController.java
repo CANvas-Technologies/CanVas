@@ -26,9 +26,9 @@ public class UploadController {
     }
 
     @CrossOrigin(origins = "http://localhost:3000")
-    @PostMapping("/upload/{name}")
+    @PostMapping("/upload/{name}/{email}")
     public String singleFileUpload(
-            @RequestParam("file") MultipartFile file, @PathVariable("name") String name, RedirectAttributes redirectAttributes) {
+            @RequestParam("file") MultipartFile file, @PathVariable("name") String name, @PathVariable("email") String email, RedirectAttributes redirectAttributes) {
 
         if (file.isEmpty()) {
             redirectAttributes.addFlashAttribute("message", "Please select a file to upload");
@@ -49,7 +49,7 @@ public class UploadController {
             TraceHandle trace = null;
 
             try {
-                trace = UploadHandler.HandleUpload(path, name);
+                trace = UploadHandler.HandleUpload(path, name, email);
             } catch (Throwable e) {
                 e.printStackTrace();
                 // return error

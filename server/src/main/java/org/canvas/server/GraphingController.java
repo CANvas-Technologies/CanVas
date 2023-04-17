@@ -104,4 +104,21 @@ public class GraphingController {
 
         return output;
     }
+
+    @CrossOrigin(origins = "http://localhost:3000")
+    @RequestMapping(value = "/graphing/getTraceNames/{email}")
+    @ResponseBody
+    public ArrayList<String> getTraceName(@PathVariable("email") String email) {
+        ArrayList<String> output = new ArrayList<String>();
+        ArrayList<String> blank = new ArrayList<String>();
+        try {
+            output = db.getTraceNames(email);
+
+        } catch (Throwable e) {
+            e.printStackTrace();
+            return blank;
+        }
+
+        return output;
+    }
 }

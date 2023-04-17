@@ -6,7 +6,7 @@ import java.nio.file.Path;
 public class UploadHandler {
     static DatabaseDAO db = DatabaseDAO.LocalDatabase();
 
-    public static TraceHandle HandleUpload(Path input, String name) throws Throwable {
+    public static TraceHandle HandleUpload(Path input, String name, String email) throws Throwable {
         TraceHandle trace = null;
 
         // pass input for both mf4 and dbc; asammdf handles it okay.
@@ -24,7 +24,7 @@ public class UploadHandler {
             // CREATE TABLE traces (trace_uuid char(36) PRIMARY KEY, trace_name varchar(1000),
             // trace_key_table char(47));
 
-            trace = db.newTrace(name);
+            trace = db.newTrace(name, email);
 
             for (File f : files) {
                 SignalData sigData = MdfImporter.readCsvFileToSignalData(f);

@@ -41,7 +41,7 @@ public class DatabaseDAO {
 
         // Set up the primary traces table if it doesn't exist.
         final String createPrimaryTable =
-                "CREATE TABLE IF NOT EXISTS traces (trace_uuid char(36) PRIMARY KEY, trace_name varchar(1000), trace_key_table char(47))";
+                "CREATE TABLE IF NOT EXISTS traces (trace_uuid char(36) PRIMARY KEY, email varchar(1000), trace_name varchar(1000), trace_key_table char(47))";
         try (PreparedStatement statement = this.connection.prepareStatement(createPrimaryTable); ) {
             statement.executeUpdate();
         } catch (SQLException e) {
@@ -143,14 +143,15 @@ public class DatabaseDAO {
         }
     }
 
-    public TraceHandle newTrace(String name) {
-        TraceHandle trace = new TraceHandle(name);
+    public TraceHandle newTrace(String name, String email) {
+        TraceHandle trace = new TraceHandle(name, email);
 
-        final String INSERT_TRACE = "INSERT INTO traces VALUES (?,?,?)";
+        final String INSERT_TRACE = "INSERT INTO traces VALUES (?,?,?,?)";
         try (PreparedStatement statement = this.connection.prepareStatement(INSERT_TRACE); ) {
             statement.setString(1, trace.getUUIDString());
-            statement.setString(2, trace.getName());
-            statement.setString(3, trace.getKeyTableName());
+            statement.setString(2, trace.getEmail());
+            statement.setString(3, trace.getName());
+            statement.setString(4, trace.getKeyTableName());
             statement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -417,5 +418,22 @@ public class DatabaseDAO {
         }
 
         return count;
+    }
+
+    public ArrayList<String> getTraceNames(String email) {
+        ArrayList<String> stringNames = new ArrayList<String>();
+        StringBuilder temp = new StringBuilder();
+        temp.append("SELECT trace_name FROM traces WHERE email = ").append(email);
+        final String GET_TRACE_NAMES = temp.toString();
+        try (PreparedStatement statement = this.connection.prepareStatement(GET_TRACE_NAMES); ) {
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                stringNames.add(resultSet.getString("trace_name"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+        return stringNames;
     }
 }

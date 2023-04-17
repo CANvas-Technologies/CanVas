@@ -14,6 +14,7 @@ function FileUploadSingle() {
 
   const [file, setFile] = useState();
   const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
   const [downloadUri, setDownloadUri] = React.useState();
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -26,7 +27,7 @@ function FileUploadSingle() {
     try {
       const formData = new FormData();
       formData.append("file", file);
-      const API_URL = "http://localhost:8080/upload/" + name;
+      const API_URL = "http://localhost:8080/upload/" + name + "/" + email;
       const response = await axios.post(API_URL, formData);
       setDownloadUri(response.data.fileDownloadUri);
     } catch (err) {
@@ -43,9 +44,15 @@ function FileUploadSingle() {
               <TextField
                   value = {name}
                   onChange = {(event) => setName(event.target.value)}
-                  label = 'trace name'
+                  label = 'Trace name'
               />
-              <Input type="file" onChange={handleFileChange} hidden/>
+              <TextField
+                  value = {email}
+                  onChange = {(event) => setEmail(event.target.value)}
+                  label = 'User email'
+              />
+
+              <Input type="file" onChange={handleFileChange}/>
               <Button onClick={uploadFile}>Upload</Button>
           </FormControl>
       </Divider>
