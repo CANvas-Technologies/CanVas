@@ -168,7 +168,6 @@ public class DatabaseDAO {
         this.createSignalTable(sig);
         this.insertSignalData(sig, sigData);
 
-
         return sig;
     }
 
@@ -193,7 +192,11 @@ public class DatabaseDAO {
     public String getSignalUUID(String traceUUID, String signalName) {
         String name = "trace_" + traceUUID + "_keys";
         String output = "";
-        final String GET_TABLE_NAME = "SELECT signal_uuid FROM " + wrapQuotes(name) + " WHERE signal_name = " + wrapSingleQuotes(signalName);
+        final String GET_TABLE_NAME =
+                "SELECT signal_uuid FROM "
+                        + wrapQuotes(name)
+                        + " WHERE signal_name = "
+                        + wrapSingleQuotes(signalName);
         try (PreparedStatement statement = this.connection.prepareStatement(GET_TABLE_NAME); ) {
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {
@@ -252,7 +255,7 @@ public class DatabaseDAO {
         return bucketVals;
     }
 
-    public ArrayList<String> getSignalNames(String traceUUID){
+    public ArrayList<String> getSignalNames(String traceUUID) {
         ArrayList<String> stringNames = new ArrayList<String>();
         StringBuilder temp = new StringBuilder();
         temp.append("SELECT signal_name FROM ").append(wrapQuotes("trace_" + traceUUID + "_keys"));
@@ -274,7 +277,7 @@ public class DatabaseDAO {
         String output = "";
         String traceUUID = getTraceUUID(traceName);
         System.out.println(traceUUID);
-        //System.out.println("GOT TRACE UUID:" + traceUUID);
+        // System.out.println("GOT TRACE UUID:" + traceUUID);
         String signalUUID = getSignalUUID(traceUUID, stringName);
         System.out.println(signalUUID);
         StringBuilder temp = new StringBuilder();
@@ -287,11 +290,11 @@ public class DatabaseDAO {
                 .append(bucketBounds.get(0))
                 .append(" AND ")
                 .append(bucketBounds.get(1));
-                /*.append(wrapQuotes("signal_" + signalUUID + "_data"))
-                .append(" WHERE timestamp > ")
-                .append(bucketBounds.get(0))
-                .append(" AND timestamp <= ")
-                .append(bucketBounds.get(1));*/
+        /*.append(wrapQuotes("signal_" + signalUUID + "_data"))
+        .append(" WHERE timestamp > ")
+        .append(bucketBounds.get(0))
+        .append(" AND timestamp <= ")
+        .append(bucketBounds.get(1));*/
         final String RETRIEVE_COMMAND = temp.toString();
         try (PreparedStatement statement = this.connection.prepareStatement(RETRIEVE_COMMAND)) {
 
@@ -360,24 +363,23 @@ public class DatabaseDAO {
         return "ALL TABLES DROPPED, TRACE INSTANCE REMOVED";
     }
 
-    public int getBucketCount(String traceName, String signalName){
+    public int getBucketCount(String traceName, String signalName) {
         String traceUUID = getTraceUUID(traceName);
         System.out.println(traceUUID);
-        String signalUUID = getSignalUUID(traceUUID,signalName);
+        String signalUUID = getSignalUUID(traceUUID, signalName);
         System.out.println(signalUUID);
         int count = 0;
 
-        for (int i=0; i<1200; i++){
+        for (int i = 0; i < 1200; i++) {
             List<Integer> bucketBounds = getBucketCutoffs(traceUUID, signalUUID, i);
-            //System.out.println(bucketBounds);
-            if(i == 0){
+            // System.out.println(bucketBounds);
+            if (i == 0) {
                 count = count + 1;
-            }
-            else{
+            } else {
                 StringBuilder temp = new StringBuilder();
                 /*temp.append("SELECT timestamp").append(" FROM ").append(wrapQuotes("signal_" + signalUUID + "_data"))
-                        .append(" WHERE timestamp >= " + bucketBounds.get(0))
-                        .append(" AND timestamp <= " + bucketBounds.get(1));*/
+                .append(" WHERE timestamp >= " + bucketBounds.get(0))
+                .append(" AND timestamp <= " + bucketBounds.get(1));*/
                 temp.append("SELECT * FROM")
                         .append("( SELECT timestamp, ROW_NUMBER () OVER (ORDER BY timestamp) ")
                         .append(" FROM")
@@ -386,33 +388,31 @@ public class DatabaseDAO {
                         .append(" WHERE ROW_NUMBER = ")
                         .append(bucketBounds.get(1));
                 final String GET_COUNT = temp.toString();
-                try (PreparedStatement statement = this.connection.prepareStatement(GET_COUNT, ResultSet.TYPE_SCROLL_SENSITIVE,
-                        ResultSet.CONCUR_UPDATABLE); ) {
+                try (PreparedStatement statement =
+                        this.connection.prepareStatement(
+                                GET_COUNT,
+                                ResultSet.TYPE_SCROLL_SENSITIVE,
+                                ResultSet.CONCUR_UPDATABLE); ) {
 
                     ResultSet resultSet = statement.executeQuery();
-                    if(resultSet.next()){
-                        if(resultSet.getInt(1) !=0){
-                            count = count +1;
+                    if (resultSet.next()) {
+                        if (resultSet.getInt(1) != 0) {
+                            count = count + 1;
                             System.out.println(resultSet.getFloat(1));
                         }
 
-
                         resultSet.beforeFirst();
-
                     }
-
-
 
                 } catch (SQLException e) {
                     e.printStackTrace();
                     throw new RuntimeException(e);
                 }
             }
-          /*  StringBuilder temp = new StringBuilder();
+            /*  StringBuilder temp = new StringBuilder();
             temp.append("SELECT SUM(CASE WHEN \'b" + i + "\' IS NULL THEN 0 ELSE 1 END) FROM ").append(wrapQuotes("trace_" + traceUUID + "_keys"))
                     .append(" WHERE signal_name = ").append(wrapSingleQuotes(signalName));
             final String GET_COUNT = temp.toString(); */
-
 
         }
 
