@@ -18,8 +18,8 @@ function FileUploadSingle() {
     try {
       const formData = new FormData();
       formData.append("file", file);
-      const API_URL = "http://localhost:8080/files";
-      const response = await axios.put(API_URL, formData);
+      const API_URL = "http://localhost:8080/upload";
+      const response = await axios.post(API_URL, formData);
       setDownloadUri(response.data.fileDownloadUri);
     } catch (err) {
       alert(err.message);
