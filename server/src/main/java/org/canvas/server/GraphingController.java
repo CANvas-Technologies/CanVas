@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @CrossOrigin(origins = "http://localhost:3000")
 @Controller
 public class GraphingController {
+    static DatabaseDAO db = DatabaseDAO.LocalDatabase();
+
     @GetMapping("/graphing")
     public String index() {
         return "graphing";
@@ -29,8 +31,6 @@ public class GraphingController {
     public String getSignalData(
             @PathVariable("traceName") String traceName,
             @PathVariable("signalName") String signalName) {
-        DatabaseConnectionManager dcm =
-                new DatabaseConnectionManager("localhost", "candata", "postgres", "password");
 
         String output = "TESTING";
         String[] toInsert;
@@ -41,8 +41,6 @@ public class GraphingController {
         List<String> exampleList = new ArrayList<String>();
         List<String> blankList = new ArrayList<String>();
         try {
-            Connection connection = dcm.getConnection();
-            DatabaseDAO db = new DatabaseDAO(connection);
             int bucketCount = db.getBucketCount(traceName, signalName);
             System.out.println(bucketCount);
             // JSONObject values = new JSONObject();
