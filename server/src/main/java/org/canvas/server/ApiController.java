@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 public class ApiController {
+    static DatabaseDAO db = DatabaseDAO.LocalDatabase();
+
     @GetMapping("/api")
     public String index() {
         return "api";
