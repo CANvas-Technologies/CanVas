@@ -86,6 +86,7 @@ const data = [
 export default function Graph() {
     const [name, setName] = useState("");
     const [traceNames, setTraceNames] = useState("");
+    const [email, setEmail] = useState("");
     const [signal, setSignal] = useState("");
     const [wasClicked, setClicked ] = useState(null);
     const [newData, setData] = useState(null);
@@ -93,24 +94,21 @@ export default function Graph() {
     const [signalNames, setSignalNames] = useState(null);
     const [upperBucket, setUpper] = useState(100);
     const defaultOption = "default";
-    async function getData(traceName, signalName){
+    async function getData(){
         fetch(
-            "http://localhost:8080/graphing/getSignalData/" + traceName + "/" + signalName + "/" + bucketVal[0] + "/" + bucketVal[1]
+            "http://localhost:8080/graphing/getSignalData/" + name.value + "/" + signal.value + "/" + bucketVal[0] + "/" + bucketVal[1]
         ).then((response) => response.json())
             .then(setData);
-
     }
-    async function getBucket(traceName,signalName){
-        const response = await axios.get('http://localhost:8080/graphing/getTrace/' + traceName + "/" + signalName);
+    async function getBucket(){
+        const response = await axios.get('http://localhost:8080/graphing/getTrace/' + name.value + "/" + signal.value);
         setUpper(response.data)
         setClicked(1)
     }
 
-    async function getSignalNames(traceName){
-        const response = await axios.get("http://localhost:8080/graphing/getSignalNames/" + traceName);
+    async function getSignalNames(){
+        const response = await axios.get("http://localhost:8080/graphing/getSignalNames/" + name.value);
         setSignalNames(response.data)
-
-
     }
     function valuetext(bucketVal) {
         return `${bucketVal}°C`;
@@ -159,8 +157,10 @@ export default function Graph() {
         await getSignalNames(name);
     }
 
-
-
+    async function handleGetTraces(){
+        const response = await axios.get('http://localhost:8080/graphing/getTraceNames/' + email);
+        setTraceNames(response.data)
+    }
 
     const getGraph = async(e) => {
         e.preventDefault();
@@ -169,25 +169,31 @@ export default function Graph() {
     }
 
 
-        console.log(signal)
+        console.log(traceNames)
+        console.log(name)
 
         return (
             <div>
             <form>
                 <input
-                    value={name}
+                    value={email}
                     onChange={(event) =>
-                        setName(event.target.value)
+                        setEmail(event.target.value)
 
                     }
                     type="text"
-                    placeholder="trace name..."
+                    placeholder="email..."
                 />
+            </form>
+                <button onClick={handleGetTraces}>Get Traces</button>
+                {
+                traceNames ?
+                    <Dropdown options={traceNames} onChange={setName} value={defaultOption} placeholder="Select a trace" />
+                    : <p></p>
+                }
                 <button onClick={handleSignalNames}>Retrieve Signal Names
 
                 </button>
-
-            </form>
                 {signalNames ?
                 <Dropdown options={signalNames} onChange={setSignal} value={defaultOption} placeholder="Select a signal" />
                 : <p></p>
