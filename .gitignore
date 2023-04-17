@@ -28,3 +28,6 @@ replay_pid*
 
 IdeaProjects/
 .idea/
+
+# Node
+node_modules
