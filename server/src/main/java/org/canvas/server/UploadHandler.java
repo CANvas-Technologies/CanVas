@@ -24,7 +24,7 @@ public class UploadHandler {
             // CREATE TABLE traces (trace_uuid char(36) PRIMARY KEY, trace_name varchar(1000),
             // trace_key_table char(47));
 
-            trace = db.newTrace("actual_real_trace");
+            trace = db.newTrace("testing");
 
             for (File f : files) {
                 SignalData sigData = MdfImporter.readCsvFileToSignalData(f);

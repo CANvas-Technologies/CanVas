@@ -1,5 +1,6 @@
 package org.canvas.server;
 
+import java.sql.Array;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
@@ -100,4 +101,29 @@ public class GraphingController {
 
         return output;
     }
+    @CrossOrigin(origins = "http://localhost:3000")
+    @RequestMapping(value = "/graphing/getSignalNames/{traceName}")
+    @ResponseBody
+    public ArrayList<String> getSignalNames(
+            @PathVariable("traceName") String traceName
+            ) {
+        DatabaseConnectionManager dcm =
+                new DatabaseConnectionManager("localhost", "candata", "postgres", "password");
+        ArrayList<String> output = new ArrayList<String>();
+        ArrayList<String> blank = new ArrayList<String>();
+        try {
+            Connection connection = dcm.getConnection();
+            DatabaseDAO db = new DatabaseDAO(connection);
+            String trace_uuid = db.getTraceUUID(traceName);
+            output = db.getSignalNames(trace_uuid);
+
+
+        } catch (Throwable e) {
+            e.printStackTrace();
+            return blank;
+        }
+
+        return output;
+    }
+
 }
