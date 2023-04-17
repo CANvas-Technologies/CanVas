@@ -1,4 +1,4 @@
-
+import React, {Component} from 'react'
 import Navbar from './components/navbar';
 import {BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import './App.css';
@@ -7,6 +7,7 @@ import AboutCanvas from './components/pages/aboutcanvas';
 import StartGraphing from './components/pages/startgraphing';
 import LinkSharing from './components/pages/linksharing';
 import SignUp from './components/pages/signup';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 
 function App() {
