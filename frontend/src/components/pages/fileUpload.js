@@ -35,27 +35,26 @@ function FileUploadSingle() {
     }
   };
 
-
   return (
-
-      <Divider classname='input-areas'>
-          <FormControl>
-              <FormLabel>Enter Name:</FormLabel>
-              <TextField
-                  value = {name}
-                  onChange = {(event) => setName(event.target.value)}
-                  label = 'Trace name'
-              />
-              <TextField
-                  value = {email}
-                  onChange = {(event) => setEmail(event.target.value)}
-                  label = 'User email'
-              />
-
-              <Input type="file" onChange={handleFileChange}/>
-              <Button onClick={uploadFile}>Upload</Button>
-          </FormControl>
-      </Divider>
+    <FormControl>
+        <FormLabel>Enter Name:</FormLabel>
+        <TextField
+            value = {name}
+            onChange = {(event) => setName(event.target.value)}
+            label = 'Trace name'
+        />
+        <br/>
+        <TextField
+            value = {email}
+            onChange = {(event) => setEmail(event.target.value)}
+            label = 'User email'
+        />
+        <br/>
+        <Input type="file" onChange={handleFileChange}/>
+        <br/>
+        <Button onClick={uploadFile} size='large' variant='contained'>Upload</Button>
+        <br/>
+    </FormControl>
   );
 }
 

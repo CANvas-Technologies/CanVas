@@ -33,7 +33,7 @@ import {
     Label
 } from "recharts";
 import {render} from "@testing-library/react";
-import {Box, Slider, Button} from "@mui/material";
+import {Box, Slider, Button, Card} from "@mui/material";
 import axios from "axios";
 
 const data = [
@@ -94,7 +94,7 @@ export default function Graph() {
     const [bucketVal, setBuckets] = useState([0,0]);
     const [signalNames, setSignalNames] = useState(null);
     const [upperBucket, setUpper] = useState(100);
-    const defaultOption = "default";
+    const defaultOption = "Select";
     async function getData(){
         fetch(
             "http://localhost:8080/graphing/getSignalData/" + name.value + "/" + signal.value + "/" + bucketVal[0] + "/" + bucketVal[1]
@@ -177,6 +177,14 @@ export default function Graph() {
 
         return (
             <div>
+            <div style={{marginLeft: 2 + 'em', marginRight: 2 + 'em'}}>
+            <h1 className='upload'> Graphing </h1>
+            </div>
+            <br/>
+            <div style={{marginLeft: 2 + 'em', marginRight: 2 + 'em'}}>
+            <Card>
+            <div style={{marginLeft: 2 + 'em', marginRight: 2 + 'em'}}>
+            <br/>
             <form>
                 <input
                     value={email}
@@ -185,29 +193,40 @@ export default function Graph() {
 
                     }
                     type="text"
-                    placeholder="email..."
+                    placeholder="Email"
                 />
+            <br/>
             </form>
-                <Button  onClick={handleGetTraces}>Get Traces</Button >
+                <Button variant='outlined' onClick={handleGetTraces}>Get Traces</Button >
+                <br/>
+                <br/>
                 {
                 traceNames ?
                     <Dropdown options={traceNames} onChange={setName} value={defaultOption} placeholder="Select a trace" />
                     : <p></p>
                 }
-                <Button  onClick={handleSignalNames}>Retrieve Signal Names
-
-                </Button >
+                {name ?
+                    <Button  variant='outlined'  onClick={handleSignalNames}>Retrieve Signal Names</Button >
+                    : <p></p>
+                }
+                <br/>
+                <br/>
                 {signalNames ?
                 <Dropdown options={signalNames} onChange={setSignal} value={defaultOption} placeholder="Select a signal" />
                 : <p></p>
                 }
                 {signalNames?
-                <Button  onClick={retrieveBucket}>Retrieve Signal Data
+                <>
+                <Button  variant='outlined'  onClick={retrieveBucket}>Retrieve Signal Data
 
                 </Button >
+                <br/>
+                <br/>
+                </>
                 :<p></p>
                 }
 
+                {(signal && wasClicked) ?
                 <Box sx={{ width: 300 }}>
                     <Slider
                         getAriaLabel={() => 'Bucket bounds'}
@@ -220,21 +239,32 @@ export default function Graph() {
                     />
                     <p>Select seconds of data to display</p>
                 </Box>
+                :<p></p>
+                }
                 {wasClicked ?
-                <Button  onClick={getGraph}>Display Graph
+                <Button  variant='outlined'  onClick={getGraph}>Display Graph
 
                 </Button >
                 : <p></p>
                 }
+                <br/>
+                <br/>
+                </div>
+                </Card>
+                </div>
+                <center>
+                <br/>
+                <br/>
+                <br/>
                 {newData ?
                 <LineChart
                     width={2000}
                     height={500}
                     data={newData}
                     margin={{
-                        top: 5,
+                        top: 20,
                         right: 30,
-                        left: 20,
+                        left: 5,
                         bottom: 5
                     }}
                 >
@@ -251,11 +281,10 @@ export default function Graph() {
                         stroke="#8884d8"
                         activeDot={{ r: 8 }}
                     />
-
                 </LineChart>
-                    : <p> Enter a trace name to see the graph</p>
+                    : <p> Select a signal to see the graph</p>
                 }
-
+                </center>
             </div>
         );
 }
