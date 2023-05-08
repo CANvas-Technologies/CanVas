@@ -24,6 +24,7 @@ services:
       - CANVAS_DB_DATABASE_NAME=candata
       - CANVAS_DB_USER=postgres
       - CANVAS_DB_PASSWORD=password
+      - CANVAS_URL="http://canvas.opencan.org:3000"
     ports:
       - 8080:8080
 

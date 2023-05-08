@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "http://canvas.opencan.org:3000")
 @Controller
 public class UploadController {
     // Save the uploaded file to this folder
@@ -25,7 +25,7 @@ public class UploadController {
         return "upload";
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
+    @CrossOrigin(origins = "http://canvas.opencan.org:3000")
     @PostMapping("/upload/{name}/{email}")
     public String singleFileUpload(
             @RequestParam("file") MultipartFile file,
@@ -42,7 +42,8 @@ public class UploadController {
             // Get the file and save it somewhere
             byte[] bytes = file.getBytes();
 
-            // We use a UUID for the filename, which avoids collisions and mitigates malicious input
+            // We use a UUID for the filename, which avoids collisions and mitigates
+            // malicious input
             String throwAwayUUID = UUID.randomUUID().toString();
             Files.createDirectories(Paths.get(UPLOADED_FOLDER));
             Path path = Paths.get(UPLOADED_FOLDER + "/" + throwAwayUUID);

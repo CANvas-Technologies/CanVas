@@ -17,10 +17,10 @@ function DeletePage() {
 
   async function doDelete() {
     const uuid = await axios.get(
-      "http://localhost:8080/api/get_trace_uuid/" + name.value
+      "http://canvas.opencan.org:8080/api/get_trace_uuid/" + name.value
     );
     const response = await axios.get(
-      "http://localhost:8080/api/delete_trace/" + uuid.value
+      "http://canvas.opencan.org:8080/api/delete_trace/" + uuid.value
     );
   }
 
