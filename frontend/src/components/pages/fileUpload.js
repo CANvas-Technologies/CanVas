@@ -1,17 +1,16 @@
-import React from 'react';
-import { ChangeEvent, useState} from 'react';
-import axios from 'axios';
-import cors from 'cors'
+import React from "react";
+import { ChangeEvent, useState } from "react";
+import axios from "axios";
+import cors from "cors";
 
-import Button from '@mui/material/Button';
-import Divider from '@mui/material/Divider';
+import Button from "@mui/material/Button";
+import Divider from "@mui/material/Divider";
 
-import TextField from '@mui/material/TextField';
-import Input from '@mui/material/Input';
-import { FormControl, FormLabel } from '@mui/material';
+import TextField from "@mui/material/TextField";
+import Input from "@mui/material/Input";
+import { FormControl, FormLabel } from "@mui/material";
 
 function FileUploadSingle() {
-
   const [file, setFile] = useState();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -37,23 +36,25 @@ function FileUploadSingle() {
 
   return (
     <FormControl>
-        <FormLabel>Enter Name:</FormLabel>
-        <TextField
-            value = {name}
-            onChange = {(event) => setName(event.target.value)}
-            label = 'Trace name'
-        />
-        <br/>
-        <TextField
-            value = {email}
-            onChange = {(event) => setEmail(event.target.value)}
-            label = 'User email'
-        />
-        <br/>
-        <Input type="file" onChange={handleFileChange}/>
-        <br/>
-        <Button onClick={uploadFile} size='large' variant='contained'>Upload</Button>
-        <br/>
+      <FormLabel>Enter Name:</FormLabel>
+      <TextField
+        value={name}
+        onChange={(event) => setName(event.target.value)}
+        label="Trace name"
+      />
+      <br />
+      <TextField
+        value={email}
+        onChange={(event) => setEmail(event.target.value)}
+        label="User email"
+      />
+      <br />
+      <Input type="file" onChange={handleFileChange} />
+      <br />
+      <Button onClick={uploadFile} size="large" variant="contained">
+        Upload
+      </Button>
+      <br />
     </FormControl>
   );
 }

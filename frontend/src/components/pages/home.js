@@ -1,7 +1,7 @@
-import React from 'react';
-import '../../App.css';
-import HeroSection from '../herosection';
-import Footer from '../footer';
+import React from "react";
+import "../../App.css";
+import HeroSection from "../herosection";
+import Footer from "../footer";
 
 function Home() {
   return (
