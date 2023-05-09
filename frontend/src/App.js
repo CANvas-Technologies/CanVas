@@ -7,8 +7,11 @@ import AboutCanvas from "./components/pages/aboutcanvas";
 import UploadPage from "./components/pages/upload";
 import GraphsPage from "./components/pages/graphs";
 import DeletePage from "./components/pages/delete";
-import SignUp from "./components/pages/signup";
+import SignUp from "./components/pages/account";
+import CreateAccountPage from "./components/pages/CreateAccountPage";
 import "bootstrap/dist/css/bootstrap.min.css";
+import LoginPage from "./components/pages/LoginPage";
+import AccountPage from "./components/pages/account";
 
 function App() {
   return (
@@ -21,7 +24,9 @@ function App() {
           <Route path="/upload" element={<UploadPage />} />
           <Route path="/graphs" element={<GraphsPage />} />
           <Route path="/delete" element={<DeletePage />} />
-          <Route path="/sign-up" element={<SignUp />} />
+          <Route path="/sign-up" element={<CreateAccountPage />} />
+          <Route path="/account" element={<AccountPage />} />
+          <Route path="/login" element={<LoginPage />} />
         </Routes>
       </Router>
     </>

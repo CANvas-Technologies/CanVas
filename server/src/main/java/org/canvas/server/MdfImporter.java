@@ -52,7 +52,7 @@ public class MdfImporter {
 
             // todo: for now, all signal values are doubles, but there can actually be
             // different
-            // kinds
+            // kinds-=
             List<SignalDatapoint> vals = new ArrayList<SignalDatapoint>();
 
             String[] line;

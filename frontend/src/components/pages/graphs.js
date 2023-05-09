@@ -32,7 +32,7 @@ import {
   Label,
 } from "recharts";
 import { render } from "react";
-import { Box, Slider, Button, Card } from "@mui/material";
+import { Box, Slider, Button, Card, Divider } from "@mui/material";
 import axios from "axios";
 
 const data = [
@@ -192,14 +192,14 @@ export default function Graph() {
   console.log(name);
 
   return (
-    <div>
-      <div style={{ marginLeft: 2 + "em", marginRight: 2 + "em" }}>
+    <Divider>
+      <Divider style={{ marginLeft: 2 + "em", marginRight: 2 + "em" }}>
         <h1 className="upload"> Graphing </h1>
-      </div>
+      </Divider>
       <br />
-      <div style={{ marginLeft: 2 + "em", marginRight: 2 + "em" }}>
+      <Divider style={{ marginLeft: 2 + "em", marginRight: 2 + "em" }}>
         <Card>
-          <div style={{ marginLeft: 2 + "em", marginRight: 2 + "em" }}>
+          <Divider style={{ marginLeft: 2 + "em", marginRight: 2 + "em" }}>
             <br />
             <form>
               <input
@@ -281,9 +281,9 @@ export default function Graph() {
             )}
             <br />
             <br />
-          </div>
+          </Divider>
         </Card>
-      </div>
+      </Divider>
       <center>
         <br />
         <br />
@@ -322,6 +322,6 @@ export default function Graph() {
           <p> Select a signal to see the graph</p>
         )}
       </center>
-    </div>
+    </Divider>
   );
 }

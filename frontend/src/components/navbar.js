@@ -59,13 +59,18 @@ function Navbar() {
                 Graphs
               </Link>
             </li>
-            <li className="nav-item">
+            {/* <li className="nav-item">
               <Link
                 to="/sign-up"
-                className="nav-links-mobile"
+                className="nav-links"
                 onClick={closeMobileMenu}
               >
                 Sign Up
+              </Link>
+            </li> */}
+            <li className="nav-item">
+              <Link to="/login" className="nav-links" onClick={closeMobileMenu}>
+                Login
               </Link>
             </li>
           </ul>
