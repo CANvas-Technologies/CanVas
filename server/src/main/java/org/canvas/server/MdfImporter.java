@@ -32,7 +32,9 @@ public class MdfImporter {
 
             if (header.length < 2) {
                 csv.close();
-                throw new Exception("Header in csv file is too short " + path);
+                // throw new Exception("Header in csv file is too short " + path);
+                // this could be an empty file from asammdf in some cases - just skip this one.
+                return null;
             }
 
             if (!header[0].equals("timestamps")) {
@@ -48,7 +50,8 @@ public class MdfImporter {
 
             System.out.println("Processing " + signalName);
 
-            // todo: for now, all signal values are doubles, but there can actually be different
+            // todo: for now, all signal values are doubles, but there can actually be
+            // different
             // kinds
             List<SignalDatapoint> vals = new ArrayList<SignalDatapoint>();
 
@@ -68,13 +71,12 @@ public class MdfImporter {
 
     public static File[] convertMdfToCsvFiles(Path mf4, Path dbc) throws Throwable {
         // call python to convert mdf to .csv files
-        Process mdfpy =
-                new ProcessBuilder(
-                                "python3",
-                                "../pythonjava/exportcsv.py",
-                                mf4.toAbsolutePath().toString(),
-                                dbc.toAbsolutePath().toString())
-                        .start();
+        Process mdfpy = new ProcessBuilder(
+                "python3",
+                "../pythonjava/exportcsv.py",
+                mf4.toAbsolutePath().toString(),
+                dbc.toAbsolutePath().toString())
+                .start();
 
         // has the process exited successfully?
         // todo: add timeout
