@@ -31,7 +31,7 @@ import {
   Legend,
   Label,
 } from "recharts";
-import { render } from "@testing-library/react";
+import { render } from "react";
 import { Box, Slider, Button, Card } from "@mui/material";
 import axios from "axios";
 
