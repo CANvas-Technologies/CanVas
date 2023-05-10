@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import useUser from "../hooks/useUser";
-import { LinearProgress } from "@mui/material";
+import { LinearProgress, Button, Link, Input } from "@mui/material";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
@@ -32,23 +32,27 @@ const LoginPage = () => {
 
   // with mui
   return (
-    <>
+    <center>
       <h1>Log In</h1>
       {error && <p className="error">{error}</p>}
-      <input
+      <Input
         placeholder="Your email address"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
       />
-      <input
+      <br />
+      <Input
         type="password"
         placeholder="Your password"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
       />
-      <button onClick={logIn}>Log In</button>
+      <br />
+      <br />
+      <Button onClick={logIn}>Log In</Button>
+      <br />
       <Link to="/sign-up">Don't have an account? Create one here</Link>
-    </>
+    </center>
   );
 };
 

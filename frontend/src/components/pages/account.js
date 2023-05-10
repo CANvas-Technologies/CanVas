@@ -15,10 +15,13 @@ import {
 import ListItemAvatar from "@mui/material/ListItemAvatar";
 import DeleteIcon from "@mui/icons-material/Delete";
 import SsidChartIcon from "@mui/icons-material/SsidChart";
+import LogoutIcon from "@mui/icons-material/Logout";
 
 import { API_URL } from "../../env";
 import useUser from "../hooks/useUser";
-import { authorizedGet } from "../util/auth";
+import { authorizedGet, authorizedPost } from "../util/auth";
+
+import logOut from "../logout";
 
 export default function accountPage() {
   // get user state from useUser hook
@@ -47,6 +50,17 @@ export default function accountPage() {
     getTraces();
   }, [user]);
 
+  async function doDelete(trace) {
+    const uuid = authorizedGet(
+      user,
+      API_URL + "api/get_trace_uuid/" + name.value
+    );
+    const response = authorizedGet(
+      user,
+      API_URL + "api/delete_trace/" + uuid.value
+    );
+  }
+
   const traceList = () => {
     if (traces) {
       return traces.map((trace) => {
@@ -54,7 +68,11 @@ export default function accountPage() {
         return (
           <ListItem
             secondaryAction={
-              <IconButton edge="end" aria-label="delete">
+              <IconButton
+                edge="end"
+                aria-label="delete"
+                onClick={() => doDelete(trace.repeat(1))}
+              >
                 <DeleteIcon />
               </IconButton>
             }
@@ -86,12 +104,21 @@ export default function accountPage() {
               : user
               ? `Hello ${user.email}!`
               : "You are not logged in"}
+            <IconButton
+              edge="end"
+              aria-label="delete"
+              onClick={() => {
+                logOut();
+                navigate("/");
+              }}
+            >
+              <LogoutIcon />
+            </IconButton>
           </p>
           <br />
           <center>
             <Card sx={{ width: "80%" }}>
               <h1> Your Traces </h1>
-              Click a trace to view it in Graphing.
               <List>{traceList()}</List>
             </Card>
           </center>

@@ -15,7 +15,7 @@ function DeletePage() {
   const [email, setEmail] = useState("");
   const [downloadUri, setDownloadUri] = React.useState();
 
-  async function doDelete() {
+  async function doDelete(trace) {
     const uuid = await axios.get(API_URL + "api/get_trace_uuid/" + name.value);
     const response = await axios.get(
       API_URL + "api/delete_trace/" + uuid.value
