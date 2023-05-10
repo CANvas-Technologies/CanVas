@@ -18,7 +18,7 @@ function FileUploadSingle() {
 
   const [uploading, setUploading] = React.useState(false);
 
-  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = (e) => {
     if (e.target.files) {
       setFile(e.target.files[0]);
     }
@@ -29,7 +29,7 @@ function FileUploadSingle() {
       setUploading(true);
       const formData = new FormData();
       formData.append("file", file);
-      const API_URL = "http://localhost:8080/upload/" + name + "/" + email;
+      const API_URL = API_URL + "upload/" + name + "/" + email;
       const response = await axios.post(API_URL, formData);
       setDownloadUri(response.data.fileDownloadUri);
       setUploading(false);

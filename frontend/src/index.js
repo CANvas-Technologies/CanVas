@@ -23,7 +23,10 @@ const app = initializeApp(firebaseConfig);
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
+  <>
+    <script src="http://localhost:8097"></script>
+    <React.StrictMode>
+      <App />
+    </React.StrictMode>
+  </>
 );

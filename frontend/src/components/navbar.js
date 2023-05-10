@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import "./navbar.css";
 import { Button } from "./button";
 import useUser from "./hooks/useUser";
+import logOut from "./logout";
 
 function Navbar() {
   const [click, setClick] = useState(false);

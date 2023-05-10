@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-@CrossOrigin(origins = "http://localhost:3000")
+// @CrossOrigin(origins = "http://localhost:3000")
 @Controller
 public class GraphingController {
     static DatabaseDAO db = DatabaseDAO.LocalDatabase();
@@ -22,10 +22,8 @@ public class GraphingController {
         return "graphing";
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
-    @RequestMapping(
-            value = "/graphing/getSignalData/{traceName}/{signalName}/{lowerBucket}/{upperBucket}",
-            produces = MediaType.APPLICATION_JSON_VALUE)
+    // @CrossOrigin(origins = "http://localhost:3000")
+    @RequestMapping(value = "/graphing/getSignalData/{traceName}/{signalName}/{lowerBucket}/{upperBucket}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public String getSignalData(
             @PathVariable("traceName") String traceName,
@@ -35,7 +33,7 @@ public class GraphingController {
 
         String output = "TESTING";
         String[] toInsert;
-        String[] blank = new String[] {""};
+        String[] blank = new String[] { "" };
         JSONArray values = new JSONArray();
         JSONArray nullVals = new JSONArray();
         int lower = Integer.parseInt(lowerBucket);
@@ -69,7 +67,7 @@ public class GraphingController {
         return values.toString();
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
+    // @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/graphing/getTrace/{traceName}/{signalName}", produces = "text/plain")
     @ResponseBody
     public String getTrace(
@@ -88,7 +86,7 @@ public class GraphingController {
         return output;
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
+    // @CrossOrigin(origins = "http://localhost:3000"
     @RequestMapping(value = "/graphing/getSignalNames/{traceName}")
     @ResponseBody
     public ArrayList<String> getSignalNames(@PathVariable("traceName") String traceName) {
@@ -105,7 +103,7 @@ public class GraphingController {
         return output;
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
+    // @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/graphing/getTraceNames/{email}")
     @ResponseBody
     public ArrayList<String> getTraceName(@PathVariable("email") String email) {

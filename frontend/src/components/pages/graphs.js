@@ -1,21 +1,3 @@
-// import React from 'react';
-// import { Change, useState } from 'react';
-// import '../../App.css';
-// import Footer from '../footer';
-
-// export default function LinkSharing(){
-
-//     return (
-//         <>
-//         <h1 className='graphs'> Graphs </h1>
-
-//         <Footer />
-//         </>
-
-//         );
-
-// }
-
 import "../../App.css";
 import React, { useRef } from "react";
 import { useState, useEffect } from "react";
@@ -32,8 +14,17 @@ import {
   Label,
 } from "recharts";
 import { render } from "react";
-import { Box, Slider, Button, Card, Divider } from "@mui/material";
-import axios from "axios";
+import {
+  Box,
+  Slider,
+  Button,
+  Card,
+  Divider,
+  LinearProgress,
+} from "@mui/material";
+import useUser from "../hooks/useUser";
+import { API_URL } from "../../env";
+import authorizedGet from "../util/auth";
 
 const data = [
   {
@@ -91,9 +82,26 @@ export default function Graph() {
   const [signalNames, setSignalNames] = useState(null);
   const [upperBucket, setUpper] = useState(100);
   const defaultOption = "Select";
+
+  const { user, isLoading } = useUser();
+
+  // increment loading by 1 when loading, decrement when done.
+  const [loading, setLoading] = useState(0);
+
+  function startLoading() {
+    setLoading(loading + 1);
+  }
+
+  function endLoading() {
+    setLoading(0);
+  }
+
   async function getData() {
-    fetch(
-      "http://localhost:8080/graphing/getSignalData/" +
+    startLoading();
+    const response = await authorizedGet(
+      user,
+      API_URL +
+        "graphing/getSignalData/" +
         name.value +
         "/" +
         signal.value +
@@ -101,30 +109,36 @@ export default function Graph() {
         bucketVal[0] +
         "/" +
         bucketVal[1]
-    )
-      .then((response) => response.json())
-      .then(setData);
+    );
+    setData(response.data);
+    endLoading();
   }
+
   async function getBucket() {
-    const response = await axios.get(
-      "http://localhost:8080/graphing/getTrace/" +
-        name.value +
-        "/" +
-        signal.value
+    startLoading();
+    const response = await authorizedGet(
+      user,
+      API_URL + "graphing/getTrace/" + name.value + "/" + signal.value
     );
     setUpper(response.data);
     setClicked(1);
+    endLoading();
   }
 
   async function getSignalNames() {
-    const response = await axios.get(
-      "http://localhost:8080/graphing/getSignalNames/" + name.value
+    startLoading();
+    const response = await authorizedGet(
+      user,
+      API_URL + "graphing/getSignalNames/" + name.value
     );
     setSignalNames(response.data);
+    endLoading();
   }
+
   function valuetext(bucketVal) {
     return `${bucketVal}°C`;
   }
+
   function displayGraph(newData) {
     render(
       <LineChart
@@ -176,10 +190,13 @@ export default function Graph() {
   };
 
   async function handleGetTraces() {
-    const response = await axios.get(
-      "http://localhost:8080/graphing/getTraceNames/" + email
+    startLoading();
+    const response = await authorizedGet(
+      user,
+      API_URL + "graphing/getTraceNames/" + email
     );
     setTraceNames(response.data);
+    endLoading();
   }
 
   const getGraph = async (e) => {
@@ -192,136 +209,139 @@ export default function Graph() {
   console.log(name);
 
   return (
-    <Divider>
-      <Divider style={{ marginLeft: 2 + "em", marginRight: 2 + "em" }}>
-        <h1 className="upload"> Graphing </h1>
-      </Divider>
-      <br />
-      <Divider style={{ marginLeft: 2 + "em", marginRight: 2 + "em" }}>
-        <Card>
-          <Divider style={{ marginLeft: 2 + "em", marginRight: 2 + "em" }}>
-            <br />
-            <form>
-              <input
-                value={email}
-                onChange={(event) => setEmail(event.target.value)}
-                type="text"
-                placeholder="Email"
-              />
+    <>
+      {loading != 0 ? <LinearProgress /> : null}
+      <Divider>
+        <Divider style={{ marginLeft: 2 + "em", marginRight: 2 + "em" }}>
+          <h1 className="upload"> Graphing </h1>
+        </Divider>
+        <br />
+        <Divider style={{ marginLeft: 2 + "em", marginRight: 2 + "em" }}>
+          <Card>
+            <Divider style={{ marginLeft: 2 + "em", marginRight: 2 + "em" }}>
               <br />
-            </form>
-            <Button variant="outlined" onClick={handleGetTraces}>
-              Get Traces
-            </Button>
-            <br />
-            <br />
-            {traceNames ? (
-              <Dropdown
-                options={traceNames}
-                onChange={setName}
-                value={defaultOption}
-                placeholder="Select a trace"
-              />
-            ) : (
-              <p></p>
-            )}
-            {name ? (
-              <Button variant="outlined" onClick={handleSignalNames}>
-                Retrieve Signal Names
-              </Button>
-            ) : (
-              <p></p>
-            )}
-            <br />
-            <br />
-            {signalNames ? (
-              <Dropdown
-                options={signalNames}
-                onChange={setSignal}
-                value={defaultOption}
-                placeholder="Select a signal"
-              />
-            ) : (
-              <p></p>
-            )}
-            {signalNames ? (
-              <>
-                <Button variant="outlined" onClick={retrieveBucket}>
-                  Retrieve Signal Data
-                </Button>
-                <br />
-                <br />
-              </>
-            ) : (
-              <p></p>
-            )}
-
-            {signal && wasClicked ? (
-              <Box sx={{ width: 300 }}>
-                <Slider
-                  getAriaLabel={() => "Bucket bounds"}
-                  value={bucketVal}
-                  onChange={handleSlider}
-                  valueLabelDisplay="auto"
-                  getAriaValueText={valuetext}
-                  min={0}
-                  max={upperBucket}
+              <form>
+                <input
+                  value={email}
+                  onChange={(event) => setEmail(event.target.value)}
+                  type="text"
+                  placeholder="Email"
                 />
-                <p>Select seconds of data to display</p>
-              </Box>
-            ) : (
-              <p></p>
-            )}
-            {wasClicked ? (
-              <Button variant="outlined" onClick={getGraph}>
-                Display Graph
+                <br />
+              </form>
+              <Button variant="outlined" onClick={handleGetTraces}>
+                Get Traces
               </Button>
-            ) : (
-              <p></p>
-            )}
-            <br />
-            <br />
-          </Divider>
-        </Card>
-      </Divider>
-      <center>
-        <br />
-        <br />
-        <br />
-        {newData ? (
-          <LineChart
-            width={2000}
-            height={500}
-            data={newData}
-            margin={{
-              top: 20,
-              right: 30,
-              left: 5,
-              bottom: 5,
-            }}
-          >
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="timestamp">
-              <Label
-                value="timestamp (seconds)"
-                offset={50}
-                position="insideBottom"
+              <br />
+              <br />
+              {traceNames ? (
+                <Dropdown
+                  options={traceNames}
+                  onChange={setName}
+                  value={defaultOption}
+                  placeholder="Select a trace"
+                />
+              ) : (
+                <p></p>
+              )}
+              {name ? (
+                <Button variant="outlined" onClick={handleSignalNames}>
+                  Retrieve Signal Names
+                </Button>
+              ) : (
+                <p></p>
+              )}
+              <br />
+              <br />
+              {signalNames ? (
+                <Dropdown
+                  options={signalNames}
+                  onChange={setSignal}
+                  value={defaultOption}
+                  placeholder="Select a signal"
+                />
+              ) : (
+                <p></p>
+              )}
+              {signalNames ? (
+                <>
+                  <Button variant="outlined" onClick={retrieveBucket}>
+                    Retrieve Signal Data
+                  </Button>
+                  <br />
+                  <br />
+                </>
+              ) : (
+                <p></p>
+              )}
+
+              {signal && wasClicked ? (
+                <Box sx={{ width: 300 }}>
+                  <Slider
+                    getAriaLabel={() => "Bucket bounds"}
+                    value={bucketVal}
+                    onChange={handleSlider}
+                    valueLabelDisplay="auto"
+                    getAriaValueText={valuetext}
+                    min={0}
+                    max={upperBucket}
+                  />
+                  <p>Select seconds of data to display</p>
+                </Box>
+              ) : (
+                <p></p>
+              )}
+              {wasClicked ? (
+                <Button variant="outlined" onClick={getGraph}>
+                  Display Graph
+                </Button>
+              ) : (
+                <p></p>
+              )}
+              <br />
+              <br />
+            </Divider>
+          </Card>
+        </Divider>
+        <center>
+          <br />
+          <br />
+          <br />
+          {newData ? (
+            <LineChart
+              width={2000}
+              height={500}
+              data={newData}
+              margin={{
+                top: 20,
+                right: 30,
+                left: 5,
+                bottom: 5,
+              }}
+            >
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="timestamp">
+                <Label
+                  value="timestamp (seconds)"
+                  offset={50}
+                  position="insideBottom"
+                />
+              </XAxis>
+              <YAxis type="number" domain={[0, 100]} />
+              <Tooltip />
+              <Legend />
+              <Line
+                type="monotone"
+                dataKey="data point"
+                stroke="#8884d8"
+                activeDot={{ r: 8 }}
               />
-            </XAxis>
-            <YAxis type="number" domain={[0, 100]} />
-            <Tooltip />
-            <Legend />
-            <Line
-              type="monotone"
-              dataKey="data point"
-              stroke="#8884d8"
-              activeDot={{ r: 8 }}
-            />
-          </LineChart>
-        ) : (
-          <p> Select a signal to see the graph</p>
-        )}
-      </center>
-    </Divider>
+            </LineChart>
+          ) : (
+            <p> Select a signal to see the graph</p>
+          )}
+        </center>
+      </Divider>
+    </>
   );
 }
