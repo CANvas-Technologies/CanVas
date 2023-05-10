@@ -12,23 +12,34 @@ import CreateAccountPage from "./components/pages/CreateAccountPage";
 import "bootstrap/dist/css/bootstrap.min.css";
 import LoginPage from "./components/pages/LoginPage";
 import AccountPage from "./components/pages/account";
+import { ThemeProvider, createTheme } from "@mui/material/styles";
+import CssBaseline from "@mui/material/CssBaseline";
+
+const darkTheme = createTheme({
+  palette: {
+    mode: "dark",
+  },
+});
 
 function App() {
   return (
     <>
-      <Router>
-        <Navbar />
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/about-canvas" element={<AboutCanvas />} />
-          <Route path="/upload" element={<UploadPage />} />
-          <Route path="/graphs" element={<GraphsPage />} />
-          <Route path="/delete" element={<DeletePage />} />
-          <Route path="/sign-up" element={<CreateAccountPage />} />
-          <Route path="/account" element={<AccountPage />} />
-          <Route path="/login" element={<LoginPage />} />
-        </Routes>
-      </Router>
+      <ThemeProvider theme={darkTheme}>
+        <CssBaseline />
+        <Router>
+          <Navbar />
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/about-canvas" element={<AboutCanvas />} />
+            <Route path="/upload" element={<UploadPage />} />
+            <Route path="/graphs" element={<GraphsPage />} />
+            <Route path="/delete" element={<DeletePage />} />
+            <Route path="/sign-up" element={<CreateAccountPage />} />
+            <Route path="/account" element={<AccountPage />} />
+            <Route path="/login" element={<LoginPage />} />
+          </Routes>
+        </Router>
+      </ThemeProvider>
     </>
   );
 }

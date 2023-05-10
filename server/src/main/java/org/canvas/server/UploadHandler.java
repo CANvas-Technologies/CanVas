@@ -6,6 +6,9 @@ import java.nio.file.Path;
 public class UploadHandler {
     static DatabaseDAO db = DatabaseDAO.LocalDatabase();
 
+    // note that the email field is just a unique identifier;
+    // it doesn't actually need to be an email address (and it isn't at the moment).
+    // We use the Firebase authentication principal name as the "email".
     public static TraceHandle HandleUpload(Path input, String name, String email) throws Throwable {
         TraceHandle trace = null;
 
@@ -14,14 +17,16 @@ public class UploadHandler {
 
         try {
             // SETUP INSTRUCTIONS:
-            // Make sure your database is called candata, and you have a traces table premade
+            // Make sure your database is called candata, and you have a traces table
+            // premade
             // according to this command:
 
             // trace_uuid length is 36 (uuid4 length with separator hyphens)
             // trace_key_table name length is 47 chars - trace_UUID_keys, e.g.
             // trace_9d01a158-88b2-46d4-bb97-e29f5a4d6c09_keys
             //
-            // CREATE TABLE traces (trace_uuid char(36) PRIMARY KEY, trace_name varchar(1000),
+            // CREATE TABLE traces (trace_uuid char(36) PRIMARY KEY, trace_name
+            // varchar(1000),
             // trace_key_table char(47));
 
             trace = db.newTrace(name, email);

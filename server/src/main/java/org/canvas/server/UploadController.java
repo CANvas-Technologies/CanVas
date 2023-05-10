@@ -5,6 +5,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.UUID;
+
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,11 +28,11 @@ public class UploadController {
     }
 
     @CrossOrigin(origins = "http://localhost:3000")
-    @PostMapping("/upload/{name}/{email}")
+    @PostMapping("/upload/{name}")
     public String singleFileUpload(
+            Authentication principal,
             @RequestParam("file") MultipartFile file,
             @PathVariable("name") String name,
-            @PathVariable("email") String email,
             RedirectAttributes redirectAttributes) {
 
         if (file.isEmpty()) {
@@ -42,7 +44,8 @@ public class UploadController {
             // Get the file and save it somewhere
             byte[] bytes = file.getBytes();
 
-            // We use a UUID for the filename, which avoids collisions and mitigates malicious input
+            // We use a UUID for the filename, which avoids collisions and mitigates
+            // malicious input
             String throwAwayUUID = UUID.randomUUID().toString();
             Files.createDirectories(Paths.get(UPLOADED_FOLDER));
             Path path = Paths.get(UPLOADED_FOLDER + "/" + throwAwayUUID);
@@ -52,7 +55,7 @@ public class UploadController {
             TraceHandle trace = null;
 
             try {
-                trace = UploadHandler.HandleUpload(path, name, email);
+                trace = UploadHandler.HandleUpload(path, name, principal.getName());
             } catch (Throwable e) {
                 e.printStackTrace();
                 // return error

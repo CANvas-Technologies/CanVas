@@ -9,4 +9,11 @@ async function authorizedGet(user, url) {
   return axios.get(url, { headers });
 }
 
-export default authorizedGet;
+async function authorizedPost(user, url, data) {
+  const token = user && (await user.getIdToken());
+  const headers = token ? { Authorization: `Bearer ${token}` } : {};
+
+  return axios.post(url, data, { headers });
+}
+
+export { authorizedGet, authorizedPost };

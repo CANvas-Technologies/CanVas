@@ -8,6 +8,9 @@ import {
   ListItemText,
   IconButton,
   Avatar,
+  Card,
+  Divider,
+  LinearProgress,
 } from "@mui/material";
 import ListItemAvatar from "@mui/material/ListItemAvatar";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -15,7 +18,7 @@ import SsidChartIcon from "@mui/icons-material/SsidChart";
 
 import { API_URL } from "../../env";
 import useUser from "../hooks/useUser";
-import authorizedGet from "../util/auth";
+import { authorizedGet } from "../util/auth";
 
 export default function accountPage() {
   // get user state from useUser hook
@@ -25,15 +28,17 @@ export default function accountPage() {
   const [traces, setTraces] = useState(null);
 
   useEffect(() => {
+    if (isLoading) return;
+
     if (!user) {
-      if (!isLoading) navigate("/login");
+      navigate("/login");
       return;
     }
 
     const getTraces = async () => {
       const response = await authorizedGet(
         user,
-        `${API_URL}graphing/getTraceNames/${user.email}}`
+        `${API_URL}graphing/getTraceNames`
       );
       setTraces(response.data);
       console.log(response.data);
@@ -68,19 +73,32 @@ export default function accountPage() {
 
   return (
     <>
-      <h1 className="signup"> Hello Account </h1>
-      <br />
-      <p className="signup-heading">
-        {isLoading
-          ? "Loading..."
-          : user
-          ? `Hello ${user.email}`
-          : "You are not logged in"}
-      </p>
-
-      <h1> Your Traces </h1>
-      <List>{traceList()}</List>
-      <Footer />
+      {isLoading ? (
+        <LinearProgress />
+      ) : (
+        <center>
+          <br />
+          <h1 className="signup"> Your CANvas Account</h1>
+          <br />
+          <p className="signup-heading">
+            {isLoading
+              ? "Loading..."
+              : user
+              ? `Hello ${user.email}!`
+              : "You are not logged in"}
+          </p>
+          <br />
+          <center>
+            <Card sx={{ width: "80%" }}>
+              <h1> Your Traces </h1>
+              Click a trace to view it in Graphing.
+              <List>{traceList()}</List>
+            </Card>
+          </center>
+        </center>
+      )}
+      ;
+      <Footer />;
     </>
   );
 }

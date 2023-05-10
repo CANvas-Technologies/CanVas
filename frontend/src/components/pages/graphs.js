@@ -24,7 +24,7 @@ import {
 } from "@mui/material";
 import useUser from "../hooks/useUser";
 import { API_URL } from "../../env";
-import authorizedGet from "../util/auth";
+import { authorizedGet } from "../util/auth";
 
 const data = [
   {
@@ -193,7 +193,7 @@ export default function Graph() {
     startLoading();
     const response = await authorizedGet(
       user,
-      API_URL + "graphing/getTraceNames/" + email
+      API_URL + "graphing/getTraceNames"
     );
     setTraceNames(response.data);
     endLoading();
@@ -212,9 +212,9 @@ export default function Graph() {
     <>
       {loading != 0 ? <LinearProgress /> : null}
       <Divider>
-        <Divider style={{ marginLeft: 2 + "em", marginRight: 2 + "em" }}>
-          <h1 className="upload"> Graphing </h1>
-        </Divider>
+        {/* <center> */}
+        <h1 className="upload"> Graphing </h1>
+        {/* </center> */}
         <br />
         <Divider style={{ marginLeft: 2 + "em", marginRight: 2 + "em" }}>
           <Card>

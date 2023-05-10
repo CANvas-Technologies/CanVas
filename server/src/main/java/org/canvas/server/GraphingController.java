@@ -5,14 +5,13 @@ import java.util.List;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-// @CrossOrigin(origins = "http://localhost:3000")
 @Controller
 public class GraphingController {
     static DatabaseDAO db = DatabaseDAO.LocalDatabase();
@@ -22,7 +21,6 @@ public class GraphingController {
         return "graphing";
     }
 
-    // @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/graphing/getSignalData/{traceName}/{signalName}/{lowerBucket}/{upperBucket}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public String getSignalData(
@@ -67,7 +65,6 @@ public class GraphingController {
         return values.toString();
     }
 
-    // @CrossOrigin(origins = "http://localhost:3000")
     @RequestMapping(value = "/graphing/getTrace/{traceName}/{signalName}", produces = "text/plain")
     @ResponseBody
     public String getTrace(
@@ -86,7 +83,6 @@ public class GraphingController {
         return output;
     }
 
-    // @CrossOrigin(origins = "http://localhost:3000"
     @RequestMapping(value = "/graphing/getSignalNames/{traceName}")
     @ResponseBody
     public ArrayList<String> getSignalNames(@PathVariable("traceName") String traceName) {
@@ -103,14 +99,13 @@ public class GraphingController {
         return output;
     }
 
-    // @CrossOrigin(origins = "http://localhost:3000")
-    @RequestMapping(value = "/graphing/getTraceNames/{email}")
+    @RequestMapping(value = "/graphing/getTraceNames")
     @ResponseBody
-    public ArrayList<String> getTraceName(@PathVariable("email") String email) {
+    public ArrayList<String> getTraceName(Authentication principal) {
         ArrayList<String> output = new ArrayList<String>();
         ArrayList<String> blank = new ArrayList<String>();
         try {
-            output = db.getTraceNames(email);
+            output = db.getTraceNames(principal.getName());
 
         } catch (Throwable e) {
             e.printStackTrace();
