@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import "./navbar.css";
 import { Button } from "./button";
+import useUser from "./hooks/useUser";
 
 function Navbar() {
   const [click, setClick] = useState(false);
@@ -19,6 +20,8 @@ function Navbar() {
   useEffect(() => {
     showButton();
   }, []);
+
+  const { user, isLoading } = useUser();
 
   window.addEventListener("resize", showButton);
   return (
@@ -68,11 +71,27 @@ function Navbar() {
                 Sign Up
               </Link>
             </li> */}
-            <li className="nav-item">
-              <Link to="/login" className="nav-links" onClick={closeMobileMenu}>
-                Login
-              </Link>
-            </li>
+            {user ? (
+              <li className="nav-item">
+                <Link
+                  to="/account"
+                  className="nav-links"
+                  onClick={closeMobileMenu}
+                >
+                  Account
+                </Link>
+              </li>
+            ) : (
+              <li className="nav-item">
+                <Link
+                  to="/login"
+                  className="nav-links"
+                  onClick={closeMobileMenu}
+                >
+                  Login
+                </Link>
+              </li>
+            )}
           </ul>
           {button && <Button buttonStyle="btn--outline">SIGN UP</Button>}
         </div>
